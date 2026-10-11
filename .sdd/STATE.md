@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T017
+tarea_actual: T018
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T017: escribir docs/integracion.md (salidas SSM, Express con todas las subredes privadas, endpoint + listener tras desplegar, rutas RF-018, rutas internas IAM y firma SigV4, aislamiento D-013, Host/Location, permisos, orden de desaprovisionamiento, lista de comprobación RF-011).
+T018: crear .github/workflows/provision.yml (push main, concurrency urban-alert-plataforma, job validate con fmt/validate/test de ambos stacks + run.sh + actionlint + shellcheck, job provision con OIDC, plan→show -json→guard→apply→smoke→resumen); verificar actionlint.
 
 ## Contexto de trabajo
 
