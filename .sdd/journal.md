@@ -45,3 +45,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · tasks.md aprobado
 - Usuario aprueba las 26 tareas. Siguiente: /sdd-implement desde T001.
+
+## 2026-10-11 · 001-red-api-gateway · T001 hecha
+- infra/bootstrap/github-platform-policy.json (red/NAT/endpoints/SG/ENI, apigateway /apis /vpclinks /tags, rol vinculado ops.apigateway, logs /aws/apigateway/urban-alert-* y entregas, SSM /urban-alert/*, elasticloadbalancing:Describe*; 2,9 KB < 6 KB del límite) e infra/bootstrap/README.md (4 pasos: política, confianza OIDC inmutable, secreto/variable, comprobar). Verificado: json.tool OK; grep encuentra las 8 acciones; 4 pasos.
