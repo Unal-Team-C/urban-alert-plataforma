@@ -75,3 +75,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T009 hecha
 - ssm.tf: local contrato (9 claves) → aws_ssm_parameter.contrato for_each bajo /urban-alert/plataforma/, subredes-privadas StringList; outputs.tf: ssm_prefix, region, vpc_id, vpc_cidr, subredes_privadas, api_id, api_endpoint, api_execution_arn, vpc_link_id, vpc_link_sg_id. Verificado: terraform test completo 16 passed (red 4, salida 4, gateway 5, contrato 3); validate «Success».
+
+## 2026-10-11 · 001-red-api-gateway · T010 hecha
+- .terraform.lock.hcl de infra/plataforma: hashicorp/aws 6.68.0 (~> 6.0) con hashes h1 para linux_amd64, linux_arm64 y darwin_arm64. Verificado: init -backend=false -lockfile=readonly limpio tras borrar .terraform; 3 hashes h1.

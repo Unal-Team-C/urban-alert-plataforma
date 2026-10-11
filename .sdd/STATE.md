@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T010
+tarea_actual: T011
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T010: generar infra/plataforma/.terraform.lock.hcl con terraform providers lock -platform=linux_amd64 -platform=linux_arm64 -platform=darwin_arm64; verificar init -lockfile=readonly y hashes.
+T011: implementar scripts/guard-plan.sh <plan.json> con jq (actions contiene delete sobre direcciones protegidas; excepción .variables.permitir_reemplazo_compartido.value); verificar casos de guarda de run.sh y shellcheck.
 
 ## Contexto de trabajo
 
