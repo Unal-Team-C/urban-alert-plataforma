@@ -7,18 +7,19 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T022
-estado_tarea: hecha
+tarea_actual: T023
+estado_tarea: bloqueada
 
 ## Siguiente paso
 
-T022: gh workflow run Deprovision con confirm=no-confirmo; verificar que falla en «Check confirmation» sin pasos de AWS y que el gateway sigue respondiendo 404.
+T023 bloqueada: depende de replanificar la spec 002 de urban-alert-geoespacial para consumir la plataforma (subredes privadas desde SSM, rutas en el gateway con Host = endpoint, POST interno con AWS_IAM, sin URL pública propia) y desplegarla. T026 (ciclo completo) solo con autorización expresa.
 
 ## Contexto de trabajo
 
 <!-- Lo que se perdería si la sesión se corta y no está en otros archivos:
      hipótesis en curso, comandos útiles, gotchas, archivos a mirar, lo que ibas a probar. -->
 
+- Plataforma aprovisionada (2026-10-11, runs 38108135595 intentos 1–2). NAT cobrando (~37 USD/mes).
 - Hallazgo: las políticas del rol de GitHub (geoespacial infra/bootstrap/github-*-policy.json) NO permiten crear VPC/subredes/NAT/EIP/rutas/endpoints, API Gateway, VPC Link ni SSM: hará falta una política nueva de arranque.
 - Push: `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main` (el keychain no tiene credencial HTTPS).
 - Terraform local: wrapper `<scratchpad>/tf` (podman, hashicorp/terraform:1.16.5, caché de plugins en ~/.cache/tf-plugins), ejecutar desde la raíz del repo.
@@ -26,4 +27,5 @@ T022: gh workflow run Deprovision con confirm=no-confirmo; verificar que falla e
 
 ## Bloqueos / preguntas abiertas
 
+- T023: espera a geoespacial (replan de su spec 002 + despliegue sobre la plataforma). Gateway: https://aotsp8k5ad.execute-api.us-east-2.amazonaws.com. T026 opcional, requiere autorización.
 - Confianza OIDC del rol pendiente de actualizar por el usuario (subject inmutable); sin ella el primer aprovisionamiento falla en la autenticación.

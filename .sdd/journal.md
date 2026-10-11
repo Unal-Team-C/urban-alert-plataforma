@@ -127,3 +127,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T021 hecha
 - Re-run del run 38108135595 (intento 2, mismo commit 3878f64) en verde en 1 min 37 s: «No changes. Your infrastructure matches the configuration.», Apply 0/0/0, humo OK (MS-002, RNF-002, RNF-003 < 10 min).
+
+## 2026-10-11 · 001-red-api-gateway · T022 hecha
+- Run 38108491163 (Deprovision, confirm=no-confirmo): falla en «Check confirmation» con «Confirmation missing: type urban-alert-plataforma. Nothing was deleted.»; checkout, credenciales, state, dependientes y destroy en skipped; resumen ejecutado. El gateway sigue respondiendo 404 en rutas no registradas (HU-5 criterio 2, RF-012).
