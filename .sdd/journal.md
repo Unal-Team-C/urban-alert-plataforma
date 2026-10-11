@@ -54,3 +54,9 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T003 hecha
 - tests/red.tftest.hcl (2 privadas /20 en zonas distintas de la VPC 10.20.0.0/16 con DNS; ninguna subred con IP pública automática; solo la tabla pública va al IGW y las privadas salen por NAT; asociaciones; SG por defecto sin reglas; numero_zonas=1 rechazado) y tests/salida.tftest.hcl (1 NAT compartido en publica[0] con su EIP; nat_por_zona → 2 NAT, cada tabla con el de su zona; endpoint S3 Gateway en las tablas privadas). Verificado: test -filter de cada archivo falla solo con «Reference to undeclared resource».
+
+## 2026-10-11 · general · Push a main (petición del usuario)
+- origin/main → af8ce62 (spec/plan/tareas, T001–T003). Sin workflows todavía: no se ejecuta nada en AWS. El push por HTTPS necesita `git -c credential.helper= -c credential.helper='!gh auth git-credential' push` (osxkeychain sin credencial).
+
+## 2026-10-11 · 001-red-api-gateway · T004 hecha
+- tests/gateway.tftest.hcl (HTTP API urban-alert-gateway sin target/route_key → sin ruta por defecto; execute-api activo; CORS sin credenciales; stage $default auto_deploy, 50/100, logs JSON con requestId/requestTime/httpMethod/routeKey/path/status/latencias al grupo /aws/apigateway/urban-alert-gateway de 30 d; retención 7 rechazada; VPC Link en las privadas con su SG, sin entrada y salida solo tcp/443 al CIDR de la VPC) y tests/contrato.tftest.hcl (9 nombres SSM exactos, valores = ids de los recursos, subredes StringList en orden, resto String; salidas ssm_prefix, vpc_id, api_endpoint, subredes_privadas, vpc_link_id). Verificado: test -filter de cada archivo falla solo con «Reference to undeclared resource».

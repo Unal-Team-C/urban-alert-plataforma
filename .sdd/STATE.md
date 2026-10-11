@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T004
+tarea_actual: T005
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T004: escribir tests/gateway.tftest.hcl y tests/contrato.tftest.hcl (HTTP API sin authorizer ni $default, stage throttling 50/100 + logs JSON 30 d, CORS sin credenciales, VPC Link + SG solo salida 443, 9 parámetros SSM).
+T005: escribir scripts/tests/run.sh y fixtures (plan-*.json para la guarda; deps-*/ con security-groups.json, load-balancers.json, network-interfaces.json, routes.json, integrations.json para dependientes).
 
 ## Contexto de trabajo
 
@@ -20,6 +20,7 @@ T004: escribir tests/gateway.tftest.hcl y tests/contrato.tftest.hcl (HTTP API si
      hipótesis en curso, comandos útiles, gotchas, archivos a mirar, lo que ibas a probar. -->
 
 - Hallazgo: las políticas del rol de GitHub (geoespacial infra/bootstrap/github-*-policy.json) NO permiten crear VPC/subredes/NAT/EIP/rutas/endpoints, API Gateway, VPC Link ni SSM: hará falta una política nueva de arranque.
+- Push: `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main` (el keychain no tiene credencial HTTPS).
 - Terraform local: wrapper `<scratchpad>/tf` (podman, hashicorp/terraform:1.16.5, caché de plugins en ~/.cache/tf-plugins), ejecutar desde la raíz del repo.
 - Indicaciones técnicas y contexto heredado en specs/001-red-api-gateway/notes.md.
 
