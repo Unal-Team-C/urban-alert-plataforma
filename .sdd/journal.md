@@ -87,3 +87,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T013 hecha
 - scripts/smoke-gateway.sh <https endpoint>: (1) /api/v1/__humo__ → 404 con hasta 10 reintentos de 6 s; (2) http://host sin 2xx/3xx (timeout 10 s); (3) ssm get-parameters-by-path /urban-alert/plataforma/ = 9; exit 1 si falla alguno, 2 si el uso es incorrecto. Verificado: bash -n y shellcheck sin avisos; con http:// sale 2 con el uso (ejecución real en T020).
+
+## 2026-10-11 · 001-red-api-gateway · T014 hecha
+- scripts/buscar-listener-express.sh <cluster> <servicio|ARN>: ecs describe-services → loadBalancers[0].targetGroupArn → elbv2 describe-target-groups → LoadBalancerArns[0] → describe-listeners Port 443; error explícito en cada paso vacío/None. Verificado: bash -n y shellcheck de todos los scripts sin avisos (SC2016 desactivado en la consulta JMESPath con backticks). Ejecución real pendiente de T023.

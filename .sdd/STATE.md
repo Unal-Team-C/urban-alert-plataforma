@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T014
+tarea_actual: T015
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T014: implementar scripts/buscar-listener-express.sh <cluster> <servicio> (ecs describe-services → targetGroupArn → elbv2 describe-target-groups → LoadBalancerArns[0] → describe-listeners puerto 443); verificar bash -n y shellcheck.
+T015: escribir infra/ejemplo-consumidor/{versions,variables}.tf y tests/ejemplo.tftest.hcl (override_data SSM; integración VPC_LINK con listener, host/SNI = endpoint, payload 1.0, overwrite:path; rutas GET públicas y POST interno AWS_IAM; política execute-api:Invoke limitada); verificar test falla solo por recursos no declarados.
 
 ## Contexto de trabajo
 
