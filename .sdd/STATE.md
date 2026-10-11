@@ -3,16 +3,16 @@
 <!-- Puntero de reanudación. Claude lo actualiza en CADA transición (inicio/fin de tarea, cambio de fase, decisión, bloqueo).
      Editar este archivo = checkpoint (lo registra el hook). Mantenlo corto: el detalle va en specs/ y journal.md.
      fase: constitution | specify | clarify | plan | tasks | implement | verify | done
-     estado_tarea: bloqueada | en_progreso | hecha | bloqueada -->
+     estado_tarea: en_progreso | en_progreso | hecha | bloqueada -->
 
 feature_activa: 001-red-api-gateway
 fase: implement
 tarea_actual: T020
-estado_tarea: bloqueada
+estado_tarea: en_progreso
 
 ## Siguiente paso
 
-T020: cuando el usuario publique la nueva versión de github-actions-urban-alert-platform (con apigateway:TagResource/UntagResource), hacer push a main (incluye el README con la arquitectura) y seguir Provision: debe crear solo stage y VPC Link (el resto ya existe en el estado) y pasar el humo.
+T020 (reintento): el usuario publicó la política con apigateway:* acotado. Push a main y seguir Provision: debe crear stage, VPC Link, rutas privadas y SSM y pasar el humo.
 
 ## Contexto de trabajo
 
@@ -26,5 +26,4 @@ T020: cuando el usuario publique la nueva versión de github-actions-urban-alert
 
 ## Bloqueos / preguntas abiertas
 
-- T020: falta apigateway:TagResource en la política del rol (AWS ya tiene VPC, NAT, API, logs; faltan stage, VPC Link, rutas privadas y SSM). El NAT ya cobra (~1,1 USD/día).
 - Confianza OIDC del rol pendiente de actualizar por el usuario (subject inmutable); sin ella el primer aprovisionamiento falla en la autenticación.

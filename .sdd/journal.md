@@ -120,3 +120,4 @@
 - Corrección: añadidos apigateway:TagResource y apigateway:UntagResource a ApiGatewayManage; README de bootstrap con el comando create-policy-version. El siguiente push retoma desde el estado.
 - README: nueva sección «UrbanAlert en AWS» (diagrama Mermaid validado con mermaid 11.4.1 + tabla local→AWS).
 - Corrección de la corrección: el editor de IAM rechaza apigateway:TagResource/UntagResource («Action doesn't exist»); la referencia oficial (servicereference …/apigateway.json) no las lista, aunque el runtime las exige (AccessDenied del run 38107569124). Se sustituye la lista de verbos por `apigateway:*` sobre los mismos recursos (/apis*, /vpclinks*, /tags/*): mismo alcance efectivo y pasa la validación.
+- El usuario publica la nueva versión de la política (apigateway:* acotado). Reintento de Provision con push a main.
