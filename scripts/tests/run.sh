@@ -18,11 +18,11 @@ expect() {
   code=$?
   if [[ "$code" -ne "$want" ]]; then
     echo "FAIL $name: exit $code, expected $want"
-    echo "$out" | sed 's/^/    /'
+    printf '    %s\n' "$out"
     failures=$((failures + 1))
   elif [[ -n "$text" && "$out" != *"$text"* ]]; then
     echo "FAIL $name: output does not contain '$text'"
-    echo "$out" | sed 's/^/    /'
+    printf '    %s\n' "$out"
     failures=$((failures + 1))
   else
     echo "ok   $name"

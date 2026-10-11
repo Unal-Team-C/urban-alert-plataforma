@@ -78,3 +78,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T010 hecha
 - .terraform.lock.hcl de infra/plataforma: hashicorp/aws 6.68.0 (~> 6.0) con hashes h1 para linux_amd64, linux_arm64 y darwin_arm64. Verificado: init -backend=false -lockfile=readonly limpio tras borrar .terraform; 3 hashes h1.
+
+## 2026-10-11 · 001-red-api-gateway · T011 hecha
+- scripts/guard-plan.sh: jq sobre resource_changes, bloquea actions con delete (eliminar o reemplazar) en aws_vpc.this, aws_subnet.privada[n], aws_apigatewayv2_api.this, aws_apigatewayv2_stage.default, aws_apigatewayv2_vpc_link.this, aws_security_group.vpc_link y aws_ssm_parameter.contrato[*]; excepción con permitir_reemplazo_compartido=true; lista en stderr. Hallazgo: macOS trae bash 3.2 (sin mapfile) → scripts sin arrays de bash 4. run.sh: printf en lugar de sed (SC2001). Verificado: 5 casos guard ok; shellcheck sin avisos.

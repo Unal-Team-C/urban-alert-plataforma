@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T011
+tarea_actual: T012
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T011: implementar scripts/guard-plan.sh <plan.json> con jq (actions contiene delete sobre direcciones protegidas; excepción .variables.permitir_reemplazo_compartido.value); verificar casos de guarda de run.sh y shellcheck.
+T012: implementar scripts/check-dependents.sh [--desde-dir DIR] <vpc_id> <api_id> (SG/ALB/ENI ajenos de la VPC, rutas e integraciones del gateway); verificar run.sh completo y shellcheck.
 
 ## Contexto de trabajo
 
