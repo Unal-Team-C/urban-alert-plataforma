@@ -102,3 +102,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T018 hecha
 - .github/workflows/provision.yml: push a main; concurrency urban-alert-plataforma sin cancelar; shell bash (pipefail); job validate (fmt, init -lockfile=readonly + validate + test de plataforma y ejemplo-consumidor, run.sh, actionlint 1.7.7, shellcheck v0.10.0); job provision (id-token, configure-aws-credentials con secrets.AWS_ROLE_ARN/vars.AWS_REGION, plan -out con plan.txt, show -json, guard-plan.sh, apply tfplan, salidas, smoke-gateway.sh, resumen con línea del plan y salidas aunque falle). Constitución 1.0.1: shellcheck stable → v0.10.0 (P8), también en la cabecera de tasks.md. Verificado: actionlint sin errores; 0 aws-access-key-id; orden plan→guarda→apply = D-008.
+
+## 2026-10-11 · 001-red-api-gateway · T019 hecha
+- .github/workflows/deprovision.yml: solo workflow_dispatch con confirm; primer paso corta (exit 1, nada eliminado) si confirm != urban-alert-plataforma o la rama no es main, antes de checkout y credenciales; misma concurrency; init + state list vacío → «nothing to delete» y salta el resto; check-dependents.sh con vpc_id/api_id de las salidas; destroy -auto-approve; resumen según resultado. Verificado: actionlint sin errores; sin on: push; confirmación (línea 37) antes de configure-aws-credentials (53).

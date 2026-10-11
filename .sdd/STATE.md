@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T019
+tarea_actual: T020
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T019: crear .github/workflows/deprovision.yml (workflow_dispatch con confirm; corte por confirmación/rama antes de credenciales; concurrency; estado vacío → nada que eliminar; check-dependents.sh → destroy; resumen); verificar actionlint.
+T020 bloqueada por pasos manuales del usuario; mientras, T024 (README) y T025 (CLAUDE.md), que no dependen de AWS.
 
 ## Contexto de trabajo
 
