@@ -1,5 +1,12 @@
 # Shared gateway and its private link (spec RF-004, RF-005, RF-007, RF-015, RF-017, RNF-005, RNF-006).
-mock_provider "aws" {}
+mock_provider "aws" {
+  # The provider validates ARN formats, so mocked ARNs must look real.
+  mock_resource "aws_cloudwatch_log_group" {
+    defaults = {
+      arn = "arn:aws:logs:us-east-2:348364742283:log-group:/aws/apigateway/urban-alert-gateway"
+    }
+  }
+}
 
 override_data {
   target = data.aws_availability_zones.available

@@ -69,3 +69,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T007 hecha
 - egress.tf: EIP + NAT (1, o uno por zona con nat_por_zona) en las públicas con depends_on IGW; una tabla privada por zona con 0.0.0.0/0 → NAT propio o el compartido; asociaciones; endpoint de gateway S3 en las tablas privadas. Verificado: test -filter=tests/salida.tftest.hcl → 4 passed; fmt -check limpio.
+
+## 2026-10-11 · 001-red-api-gateway · T008 hecha
+- logs.tf (grupo /aws/apigateway/urban-alert-gateway, retención var) y gateway.tf (HTTP API urban-alert-gateway con CORS y disable_execute_api_endpoint=false explícito; stage $default auto_deploy, throttling por variables, logs de acceso JSON; SG del VPC Link sin entrada + regla de salida tcp/443 al CIDR de la VPC; VPC Link v2 en las privadas). Hallazgo: con mock_provider el proveedor valida formato de ARN → mock_resource aws_cloudwatch_log_group con ARN realista en los 4 archivos de prueba. Verificado: gateway 5 passed; red 4 y salida 4 siguen pasando.

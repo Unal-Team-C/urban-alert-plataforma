@@ -1,5 +1,12 @@
 # Network guarantees consumed by every microservice (spec RF-001, RF-002, RNF-001, RNF-007).
-mock_provider "aws" {}
+mock_provider "aws" {
+  # The provider validates ARN formats, so mocked ARNs must look real.
+  mock_resource "aws_cloudwatch_log_group" {
+    defaults = {
+      arn = "arn:aws:logs:us-east-2:348364742283:log-group:/aws/apigateway/urban-alert-gateway"
+    }
+  }
+}
 
 override_data {
   target = data.aws_availability_zones.available

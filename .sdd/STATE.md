@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T008
+tarea_actual: T009
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T008: implementar logs.tf (aws_cloudwatch_log_group.gateway) y gateway.tf (aws_apigatewayv2_api.this con CORS, aws_apigatewayv2_stage.default, aws_security_group.vpc_link, aws_vpc_security_group_egress_rule.vpc_link_https, aws_apigatewayv2_vpc_link.this); verificar test -filter=tests/gateway.tftest.hcl.
+T009: implementar ssm.tf (aws_ssm_parameter.contrato for_each de 9 claves, subredes-privadas StringList) y outputs.tf (ssm_prefix, vpc_id, subredes_privadas, api_endpoint, vpc_link_id y resto); verificar terraform test completo.
 
 ## Contexto de trabajo
 
