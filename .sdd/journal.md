@@ -81,3 +81,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T011 hecha
 - scripts/guard-plan.sh: jq sobre resource_changes, bloquea actions con delete (eliminar o reemplazar) en aws_vpc.this, aws_subnet.privada[n], aws_apigatewayv2_api.this, aws_apigatewayv2_stage.default, aws_apigatewayv2_vpc_link.this, aws_security_group.vpc_link y aws_ssm_parameter.contrato[*]; excepción con permitir_reemplazo_compartido=true; lista en stderr. Hallazgo: macOS trae bash 3.2 (sin mapfile) → scripts sin arrays de bash 4. run.sh: printf en lugar de sed (SC2001). Verificado: 5 casos guard ok; shellcheck sin avisos.
+
+## 2026-10-11 · 001-red-api-gateway · T012 hecha
+- scripts/check-dependents.sh [--desde-dir DIR] <vpc_id> <api_id>: sin --desde-dir consulta AWS (describe-security-groups/network-interfaces filtrados por VPC, elbv2 describe-load-balancers, apigatewayv2 get-routes/get-integrations; api vacío → sin rutas) a un temporal; jq lista SG ajenos (excluye default y Stack=plataforma), ALB de la VPC, ENI salvo nat_gateway/api_gateway_managed, rutas e integraciones; exit 1 con la lista y la indicación de desaprovisionar antes los microservicios. Verificado: run.sh 11/11 ok; shellcheck sin avisos.

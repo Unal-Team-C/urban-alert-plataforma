@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T012
+tarea_actual: T013
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T012: implementar scripts/check-dependents.sh [--desde-dir DIR] <vpc_id> <api_id> (SG/ALB/ENI ajenos de la VPC, rutas e integraciones del gateway); verificar run.sh completo y shellcheck.
+T013: implementar scripts/smoke-gateway.sh <api_endpoint> (404 en /api/v1/__humo__ con reintentos, http:// sin 2xx/3xx, 9 parámetros SSM); verificar bash -n y shellcheck.
 
 ## Contexto de trabajo
 
