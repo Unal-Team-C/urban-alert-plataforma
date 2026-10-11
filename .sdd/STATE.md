@@ -8,11 +8,11 @@
 feature_activa: 001-red-api-gateway
 fase: implement
 tarea_actual: T020
-estado_tarea: bloqueada
+estado_tarea: en_progreso
 
 ## Siguiente paso
 
-T020 bloqueada: esperar a que el usuario complete los 4 pasos de infra/bootstrap/README.md (política, confianza OIDC, secreto/variable, autorizar push). Al desbloquear: push a main → seguir el run Provision (gh run watch) → T021 re-run → T022 Deprovision sin confirmación → T023 cuando geoespacial esté integrado.
+T020: el usuario confirma los pasos 1–3 de infra/bootstrap/README.md (2026-10-11). Push a main y seguir el run de Provision (gh run watch); verificar humo, resumen con 9 salidas y 404 en ruta inexistente. Además: añadir la arquitectura nueva al README (petición del usuario).
 
 ## Contexto de trabajo
 
@@ -26,5 +26,4 @@ T020 bloqueada: esperar a que el usuario complete los 4 pasos de infra/bootstrap
 
 ## Bloqueos / preguntas abiertas
 
-- T020 (primer Provision real): el usuario debe (1) crear y adjuntar github-actions-urban-alert-platform (infra/bootstrap/github-platform-policy.json), (2) corregir la confianza OIDC con el subject inmutable, (3) crear secreto AWS_ROLE_ARN y variable AWS_REGION en urban-alert-plataforma, (4) autorizar el push a main. T021–T023 y T026 dependen de T020.
 - Confianza OIDC del rol pendiente de actualizar por el usuario (subject inmutable); sin ella el primer aprovisionamiento falla en la autenticación.

@@ -111,3 +111,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T025 hecha
 - CLAUDE.md: estado remoto, arranque, estructura (stack, ejemplo, scripts, workflows, contrato SSM), comandos de validación con Podman (terraform 1.16.5, run.sh, actionlint 1.7.7, shellcheck v0.10.0) y gotchas (bash 3.2, ARN en mocks, lockfile multiplataforma, push con gh). Verificado: los comandos coinciden con la cabecera de tasks.md.
+
+## 2026-10-11 · 001-red-api-gateway · T020 desbloqueada
+- El usuario confirma: política de la plataforma adjunta, confianza OIDC corregida, secreto AWS_ROLE_ARN y variable AWS_REGION creados. Autoriza el push a main.
