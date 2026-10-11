@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T020
-estado_tarea: en_progreso
+tarea_actual: T021
+estado_tarea: hecha
 
 ## Siguiente paso
 
-T020 (reintento): el usuario publicó la política con apigateway:* acotado. Push a main y seguir Provision: debe crear stage, VPC Link, rutas privadas y SSM y pasar el humo.
+T021: gh run rerun 38108135595 y comprobar que el plan dice «No changes» y dura < 10 min.
 
 ## Contexto de trabajo
 
