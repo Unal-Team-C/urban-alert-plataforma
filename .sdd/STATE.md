@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T016
+tarea_actual: T017
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T016: implementar infra/ejemplo-consumidor/main.tf (data aws_ssm_parameter api_id/vpc_link_id/api_execution_arn; local rutas reports/coordinate/assign; aws_apigatewayv2_integration.this y aws_apigatewayv2_route.this for_each) e iam.tf (aws_iam_role_policy.invocar_rutas_internas) + lockfile; verificar test, validate y fmt.
+T017: escribir docs/integracion.md (salidas SSM, Express con todas las subredes privadas, endpoint + listener tras desplegar, rutas RF-018, rutas internas IAM y firma SigV4, aislamiento D-013, Host/Location, permisos, orden de desaprovisionamiento, lista de comprobación RF-011).
 
 ## Contexto de trabajo
 
