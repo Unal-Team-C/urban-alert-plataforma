@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T021
+tarea_actual: T022
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T021: gh run rerun 38108135595 y comprobar que el plan dice «No changes» y dura < 10 min.
+T022: gh workflow run Deprovision con confirm=no-confirmo; verificar que falla en «Check confirmation» sin pasos de AWS y que el gateway sigue respondiendo 404.
 
 ## Contexto de trabajo
 

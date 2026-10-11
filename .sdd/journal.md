@@ -124,3 +124,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T020 hecha
 - Run 38108135595 (3878f64) en verde en 3 min 53 s: plan 11 to add (stage, VPC Link, 2 rutas privadas, 7… + SSM), guarda OK, Apply complete 11 added; humo: ruta no registrada 404, HTTP plano no atendido (000), 9 parámetros SSM. Gateway: https://aotsp8k5ad.execute-api.us-east-2.amazonaws.com. Comprobado a mano: curl /api/v1/x → 404 {"message":"Not Found"}; http:// → 000. Entre los dos runs (3 min 13 s + 3 min 53 s) la plataforma quedó completa desde cero en < 20 min (MS-001, RNF-003).
+
+## 2026-10-11 · 001-red-api-gateway · T021 hecha
+- Re-run del run 38108135595 (intento 2, mismo commit 3878f64) en verde en 1 min 37 s: «No changes. Your infrastructure matches the configuration.», Apply 0/0/0, humo OK (MS-002, RNF-002, RNF-003 < 10 min).
