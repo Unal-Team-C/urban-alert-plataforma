@@ -84,3 +84,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T012 hecha
 - scripts/check-dependents.sh [--desde-dir DIR] <vpc_id> <api_id>: sin --desde-dir consulta AWS (describe-security-groups/network-interfaces filtrados por VPC, elbv2 describe-load-balancers, apigatewayv2 get-routes/get-integrations; api vacío → sin rutas) a un temporal; jq lista SG ajenos (excluye default y Stack=plataforma), ALB de la VPC, ENI salvo nat_gateway/api_gateway_managed, rutas e integraciones; exit 1 con la lista y la indicación de desaprovisionar antes los microservicios. Verificado: run.sh 11/11 ok; shellcheck sin avisos.
+
+## 2026-10-11 · 001-red-api-gateway · T013 hecha
+- scripts/smoke-gateway.sh <https endpoint>: (1) /api/v1/__humo__ → 404 con hasta 10 reintentos de 6 s; (2) http://host sin 2xx/3xx (timeout 10 s); (3) ssm get-parameters-by-path /urban-alert/plataforma/ = 9; exit 1 si falla alguno, 2 si el uso es incorrecto. Verificado: bash -n y shellcheck sin avisos; con http:// sale 2 con el uso (ejecución real en T020).

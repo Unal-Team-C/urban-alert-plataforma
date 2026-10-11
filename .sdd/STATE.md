@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T013
+tarea_actual: T014
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T013: implementar scripts/smoke-gateway.sh <api_endpoint> (404 en /api/v1/__humo__ con reintentos, http:// sin 2xx/3xx, 9 parámetros SSM); verificar bash -n y shellcheck.
+T014: implementar scripts/buscar-listener-express.sh <cluster> <servicio> (ecs describe-services → targetGroupArn → elbv2 describe-target-groups → LoadBalancerArns[0] → describe-listeners puerto 443); verificar bash -n y shellcheck.
 
 ## Contexto de trabajo
 
