@@ -48,3 +48,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T001 hecha
 - infra/bootstrap/github-platform-policy.json (red/NAT/endpoints/SG/ENI, apigateway /apis /vpclinks /tags, rol vinculado ops.apigateway, logs /aws/apigateway/urban-alert-* y entregas, SSM /urban-alert/*, elasticloadbalancing:Describe*; 2,9 KB < 6 KB del límite) e infra/bootstrap/README.md (4 pasos: política, confianza OIDC inmutable, secreto/variable, comprobar). Verificado: json.tool OK; grep encuentra las 8 acciones; 4 pasos.
+
+## 2026-10-11 · 001-red-api-gateway · T002 hecha
+- infra/plataforma: versions (TF >=1.10 <2, aws ~>6.0), backend (plataforma/terraform.tfstate, encrypt, use_lockfile), providers (default_tags Project/ManagedBy/Stack=plataforma), variables con validaciones (prefijo, CIDR <=/16, 2–4 zonas, tasa/ráfaga, retención CloudWatch >=30), terraform.tfvars. El lockfile generado por init se descarta hasta T010 (multiplataforma). Verificado: init -backend=false + validate «Success»; fmt -check limpio.

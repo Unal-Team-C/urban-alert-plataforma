@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T002
+tarea_actual: T003
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T002: esqueleto de infra/plataforma (versions, backend plataforma/terraform.tfstate, providers con default_tags Stack=plataforma, variables con validaciones de plan §6, terraform.tfvars); verificar init -backend=false + validate y fmt.
+T003: escribir infra/plataforma/tests/red.tftest.hcl y salida.tftest.hcl (mock_provider + override_data de zonas); verifica: test -filter=tests/red.tftest.hcl falla solo por recursos no declarados.
 
 ## Contexto de trabajo
 

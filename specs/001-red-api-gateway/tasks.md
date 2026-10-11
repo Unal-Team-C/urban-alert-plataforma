@@ -6,7 +6,7 @@
 Leyenda: `[ ]` pendiente · `[~]` en progreso · `[x]` hecha · `[!]` bloqueada · `[-]` descartada · `[P]` paralelizable
 
 Formato de cada tarea (una línea):
-`- [~] T001 [P] Descripción imperativa — archivos: ruta/a, ruta/b — cubre: RF-001 — verifica: <comando o criterio observable>`
+`- [ ] T001 [P] Descripción imperativa — archivos: ruta/a, ruta/b — cubre: RF-001 — verifica: <comando o criterio observable>`
 
 Dependencias: cada fase depende de la anterior; dentro de una fase se ejecuta en orden salvo `[P]`.
 Dependencias explícitas: añadir `— depende: T00X`.
@@ -22,7 +22,7 @@ Las pruebas de Terraform se dividen en un archivo por área (`red`, `salida`, `g
 ## Fase 1: Preparación
 
 - [x] T001 [P] Crear la política de arranque del rol de GitHub (VPC, subredes, IGW, EIP, NAT, tablas de rutas, endpoints de VPC; `apigateway` sobre `/apis*`, `/vpclinks*` y `/tags*`; rol vinculado `ops.apigateway.amazonaws.com`; grupos de logs `/aws/apigateway/urban-alert-*` y entregas de logs; `ssm` sobre `parameter/urban-alert/*`; `elasticloadbalancing:Describe*`), y su README con los pasos manuales: adjuntar la política, corregir la confianza OIDC con el subject inmutable, crear el secreto `AWS_ROLE_ARN` y la variable `AWS_REGION` en este repo, y enlace a `urban-alert-geoespacial/infra/bootstrap/` — archivos: infra/bootstrap/github-platform-policy.json, infra/bootstrap/README.md — cubre: RF-014, RF-016 — verifica: `python3 -m json.tool infra/bootstrap/github-platform-policy.json >/dev/null`; `grep -c` encuentra `ec2:CreateVpc`, `ec2:CreateNatGateway`, `ec2:CreateVpcEndpoint`, `apigateway:POST`, `ssm:PutParameter`, `logs:CreateLogDelivery`, `elasticloadbalancing:DescribeListeners` y `ops.apigateway.amazonaws.com`; el README enumera los 4 pasos manuales
-- [ ] T002 [P] Crear el esqueleto del stack: `versions.tf` (TF `>= 1.10, < 2.0`, aws `~> 6.0`), `backend.tf` (bucket de estado, clave `plataforma/terraform.tfstate`, `encrypt`, `use_lockfile`), `providers.tf` (`default_tags` Project/ManagedBy/Stack=plataforma), `variables.tf` con las validaciones de plan §6 y `terraform.tfvars` — archivos: infra/plataforma/{versions,backend,providers,variables}.tf, infra/plataforma/terraform.tfvars — cubre: RF-009, RNF-006 — verifica: `$TF -chdir=infra/plataforma init -backend=false` y `validate` → «Success»; `$TF fmt -check -recursive infra` sin salida
+- [x] T002 [P] Crear el esqueleto del stack: `versions.tf` (TF `>= 1.10, < 2.0`, aws `~> 6.0`), `backend.tf` (bucket de estado, clave `plataforma/terraform.tfstate`, `encrypt`, `use_lockfile`), `providers.tf` (`default_tags` Project/ManagedBy/Stack=plataforma), `variables.tf` con las validaciones de plan §6 y `terraform.tfvars` — archivos: infra/plataforma/{versions,backend,providers,variables}.tf, infra/plataforma/terraform.tfvars — cubre: RF-009, RNF-006 — verifica: `$TF -chdir=infra/plataforma init -backend=false` y `validate` → «Success»; `$TF fmt -check -recursive infra` sin salida
 
 ## Fase 2: Pruebas
 
