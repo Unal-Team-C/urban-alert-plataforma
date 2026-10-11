@@ -9,6 +9,72 @@ Cuenta `348364742283`, región `us-east-2`. Spec, plan y decisiones en [specs/00
 
 ## Arquitectura
 
+### UrbanAlert en AWS
+
+Así reemplaza AWS a la infraestructura local (`UrbanAlert/infrastructure`: Nginx como gateway, redes de Docker y un túnel de Cloudflare). Este repo crea las piezas azules; cada microservicio crea las suyas desde su propio repo.
+
+```mermaid
+flowchart TB
+    cliente["Clientes<br/>frontend, navegador, apps"]
+
+    subgraph aws["AWS · cuenta 348364742283 · us-east-2"]
+        apigw["Amazon API Gateway (HTTP API)<br/>/api/v1/reportes · /geoespacial · /usuarios · /auditoria<br/>límite de tasa · CORS · logs de acceso<br/>rutas no registradas → 404"]
+        ssm[("SSM Parameter Store<br/>/urban-alert/plataforma/*")]
+        logs[("CloudWatch Logs")]
+
+        subgraph vpc["VPC 10.20.0.0/16 · 2 zonas de disponibilidad"]
+            link["VPC Link<br/>ENI en las subredes privadas"]
+
+            subgraph privadas["Subredes privadas (sin IP pública)"]
+                alb["ALB interno de ECS Express<br/>HTTPS :443 · reglas por cabecera Host"]
+                reportes["Reportes<br/>ECS Express"]
+                geo["Geoespacial<br/>ECS Express"]
+                usuarios["Usuarios<br/>ECS Express"]
+                auditoria["Auditoria<br/>ECS Express"]
+                datos[("Bases de datos de cada servicio<br/>p. ej. RDS PostgreSQL + PostGIS")]
+            end
+
+            subgraph publicas["Subredes públicas"]
+                nat["NAT Gateway"]
+            end
+            s3ep["Endpoint de gateway S3"]
+        end
+
+        aws_svc["ECR · Secrets Manager · STS"]
+    end
+
+    cliente -- "HTTPS" --> apigw
+    apigw --> link
+    link -- "HTTPS, Host = endpoint del servicio" --> alb
+    alb --> reportes & geo & usuarios & auditoria
+    reportes & geo & usuarios & auditoria --> datos
+    reportes -. "llamada interna firmada (SigV4)<br/>por la URL del gateway" .-> nat
+    nat -- "internet" --> apigw
+    nat --> aws_svc
+    s3ep -. "capas de imágenes de ECR" .- privadas
+    apigw --> logs
+    ssm -. "lo leen los workflows de cada microservicio" .- reportes
+
+    classDef plataforma fill:#dbeafe,stroke:#1d4ed8,color:#0b1f4d
+    classDef servicio fill:#f1f5f9,stroke:#475569,color:#0f172a
+    class apigw,ssm,link,nat,s3ep,logs plataforma
+    class alb,reportes,geo,usuarios,auditoria,datos servicio
+```
+
+| Local (`UrbanAlert/infrastructure`) | AWS |
+|---|---|
+| Gateway Nginx en `localhost:8080` (único puerto publicado) | Amazon API Gateway compartido: la única URL pública, solo HTTPS |
+| Rutas `/api/v1/<servicio>/...` reescritas hacia cada servicio | Las mismas rutas: cada microservicio registra sus integraciones, con reescritura de ruta (`overwrite:path`) |
+| Cabecera `X-Urban-Gateway-Key` añadida hacia Auditoria | Cabecera fija en la integración de Auditoria |
+| Red `backend` de Docker; los servicios se llaman entre sí directamente | Los servicios se llaman entre sí **por el gateway**; las rutas internas (p. ej. la asignación de coordenadas) exigen firma IAM con el rol de tarea |
+| Redes `data-*`: cada API solo alcanza su base de datos | Bases de datos en las subredes privadas, con un grupo de seguridad que solo admite las tareas de su servicio (se crean en el repo de cada servicio) |
+| Túnel de Cloudflare para publicar la demo | No hace falta: el gateway ya es público |
+| Frontend servido por el gateway en `/` | Fuera de esta plataforma: el frontend tendrá su propia URL y llamará al gateway (CORS) |
+
+Estado: la plataforma está aprovisionada desde la spec 001. Los microservicios se integran uno a uno; el primero es [urban-alert-geoespacial](https://github.com/Unal-Team-C/urban-alert-geoespacial). La mensajería entre servicios (en local, RabbitMQ entre Reportes y Auditoria) y la autenticación en el gateway quedan para features posteriores.
+
+### Detalle de la plataforma
+
 ```text
  Internet ──HTTPS──► API Gateway (HTTP API, stage $default: límite de tasa, logs de acceso, CORS)
                        │  rutas /api/v1/<servicio>/... registradas por cada microservicio

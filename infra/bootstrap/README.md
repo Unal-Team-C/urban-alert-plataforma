@@ -19,12 +19,20 @@ aws iam attach-role-policy --role-name <rol-de-github> \
   --policy-arn arn:aws:iam::348364742283:policy/github-actions-urban-alert-platform
 ```
 
+Para actualizarla tras un cambio del JSON (se conservan hasta 5 versiones; borra la más antigua si hace falta):
+
+```bash
+aws iam create-policy-version --set-as-default \
+  --policy-arn arn:aws:iam::348364742283:policy/github-actions-urban-alert-platform \
+  --policy-document file://infra/bootstrap/github-platform-policy.json
+```
+
 Qué permite y por qué:
 
 | Bloque | Para qué |
 |---|---|
 | `NetworkManage` | VPC, subredes, IGW, IP elástica, NAT Gateway, tablas de rutas, endpoint de S3, grupos de seguridad y ENI del VPC Link. La mayoría de las acciones de creación de EC2 no admiten restringir el recurso. |
-| `ApiGatewayManage` | HTTP API, stage, VPC Link y etiquetas. También lo usan los microservicios para registrar sus rutas e integraciones. |
+| `ApiGatewayManage` | HTTP API, stage, VPC Link y etiquetas (`apigateway:TagResource`/`UntagResource`: API Gateway las exige aparte de los verbos HTTP al crear stages y VPC Links con etiquetas). También lo usan los microservicios para registrar sus rutas e integraciones. |
 | `ApiGatewayServiceLinkedRole` | Rol vinculado `ops.apigateway.amazonaws.com`, que crea API Gateway la primera vez que se crea un VPC Link. |
 | `ApiGatewayLogGroups`, `ApiGatewayAccessLogDelivery` | Grupo de logs `/aws/apigateway/urban-alert-*` y entrega de los logs de acceso. |
 | `PlatformParameters`, `ParametersDescribe` | Parámetros SSM `/urban-alert/*`: la plataforma los escribe y los microservicios los leen. |

@@ -53,7 +53,9 @@
         "apigateway:POST",
         "apigateway:PUT",
         "apigateway:PATCH",
-        "apigateway:DELETE"
+        "apigateway:DELETE",
+        "apigateway:TagResource",
+        "apigateway:UntagResource"
       ],
       "Resource": [
         "arn:aws:apigateway:us-east-2::/apis",
@@ -69,7 +71,9 @@
       "Action": "iam:CreateServiceLinkedRole",
       "Resource": "*",
       "Condition": {
-        "StringEquals": { "iam:AWSServiceName": "ops.apigateway.amazonaws.com" }
+        "StringEquals": {
+          "iam:AWSServiceName": "ops.apigateway.amazonaws.com"
+        }
       }
     },
     {

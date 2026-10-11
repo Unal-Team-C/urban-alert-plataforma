@@ -114,3 +114,8 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T020 desbloqueada
 - El usuario confirma: política de la plataforma adjunta, confianza OIDC corregida, secreto AWS_ROLE_ARN y variable AWS_REGION creados. Autoriza el push a main.
+
+## 2026-10-11 · 001-red-api-gateway · T020: primer Provision falla a medias
+- Run 38107569124: validate OK (46 s); OIDC OK; plan + guarda OK; apply creó VPC, subredes, IGW, tablas, EIP, NAT (~1 min 55 s), endpoint S3, SG del VPC Link + regla, API y grupo de logs, asociaciones. Fallaron aws_apigatewayv2_stage.default y aws_apigatewayv2_vpc_link.this: AccessDenied apigateway:TagResource (API Gateway exige la acción de etiquetado además de POST cuando hay default_tags). Las rutas privadas y los parámetros SSM no llegaron a crearse (dependían de ellos).
+- Corrección: añadidos apigateway:TagResource y apigateway:UntagResource a ApiGatewayManage; README de bootstrap con el comando create-policy-version. El siguiente push retoma desde el estado.
+- README: nueva sección «UrbanAlert en AWS» (diagrama Mermaid validado con mermaid 11.4.1 + tabla local→AWS).
