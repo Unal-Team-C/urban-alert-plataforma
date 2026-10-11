@@ -60,3 +60,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T004 hecha
 - tests/gateway.tftest.hcl (HTTP API urban-alert-gateway sin target/route_key → sin ruta por defecto; execute-api activo; CORS sin credenciales; stage $default auto_deploy, 50/100, logs JSON con requestId/requestTime/httpMethod/routeKey/path/status/latencias al grupo /aws/apigateway/urban-alert-gateway de 30 d; retención 7 rechazada; VPC Link en las privadas con su SG, sin entrada y salida solo tcp/443 al CIDR de la VPC) y tests/contrato.tftest.hcl (9 nombres SSM exactos, valores = ids de los recursos, subredes StringList en orden, resto String; salidas ssm_prefix, vpc_id, api_endpoint, subredes_privadas, vpc_link_id). Verificado: test -filter de cada archivo falla solo con «Reference to undeclared resource».
+
+## 2026-10-11 · 001-red-api-gateway · T005 hecha
+- scripts/tests/run.sh (función expect: código de salida + texto) y fixtures: 4 planes (sin cambios con reemplazo no protegido → 0; VPC+subred reemplazadas → 1; mismo con permiso → 0; borrado de parámetro SSM → 1) y 5 directorios deps-* (vacío con SG default/plataforma y ENI de NAT/VPC Link → 0; SG ajeno, ALB en la VPC, ruta+integración, ENI de tarea → 1). Verificado: run.sh falla los 11 casos solo porque no existen guard-plan.sh ni check-dependents.sh (exit 127).

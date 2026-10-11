@@ -1,0 +1,8 @@
+{
+  "Items": [
+    {
+      "IntegrationId": "i1",
+      "IntegrationUri": "arn:aws:elasticloadbalancing:us-east-2:348364742283:listener/app/x/1/2"
+    }
+  ]
+}

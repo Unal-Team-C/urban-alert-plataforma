@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T005
+tarea_actual: T006
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T005: escribir scripts/tests/run.sh y fixtures (plan-*.json para la guarda; deps-*/ con security-groups.json, load-balancers.json, network-interfaces.json, routes.json, integrations.json para dependientes).
+T006: implementar infra/plataforma/network.tf (data aws_availability_zones.available, aws_vpc.this, aws_subnet.privada/publica, aws_internet_gateway.this, aws_route_table.publica + aws_route.publica_internet + asociaciones, aws_default_security_group.this). Ojo: red.tftest.hcl también usa aws_route.privada_salida y aws_route_table_association.privada (de egress.tf, T007): esos runs pasarán al terminar T007.
 
 ## Contexto de trabajo
 

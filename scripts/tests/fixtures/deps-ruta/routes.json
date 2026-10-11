@@ -1,0 +1,8 @@
+{
+  "Items": [
+    {
+      "RouteId": "r1",
+      "RouteKey": "GET /api/v1/geoespacial/reports"
+    }
+  ]
+}

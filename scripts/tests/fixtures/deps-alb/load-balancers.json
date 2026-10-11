@@ -1,0 +1,14 @@
+{
+  "LoadBalancers": [
+    {
+      "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-2:348364742283:loadbalancer/app/otro/1",
+      "LoadBalancerName": "otro-vpc",
+      "VpcId": "vpc-0otra"
+    },
+    {
+      "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-2:348364742283:loadbalancer/app/ecs-express-gateway-alb-1/2",
+      "LoadBalancerName": "ecs-express-gateway-alb-1",
+      "VpcId": "vpc-0plataforma"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "format_version": "1.2",
+  "variables": {
+    "permitir_reemplazo_compartido": {
+      "value": false
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_vpc.this",
+      "change": {
+        "actions": [
+          "no-op"
+        ]
+      }
+    },
+    {
+      "address": "aws_subnet.privada[0]",
+      "change": {
+        "actions": [
+          "no-op"
+        ]
+      }
+    },
+    {
+      "address": "aws_route.privada_salida[0]",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ]
+      }
+    },
+    {
+      "address": "aws_apigatewayv2_stage.default",
+      "change": {
+        "actions": [
+          "update"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "SecurityGroups": [
+    {
+      "GroupId": "sg-0default",
+      "GroupName": "default",
+      "VpcId": "vpc-0plataforma",
+      "Tags": []
+    },
+    {
+      "GroupId": "sg-0vpclink",
+      "GroupName": "urban-alert-vpc-link",
+      "VpcId": "vpc-0plataforma",
+      "Tags": [
+        {
+          "Key": "Stack",
+          "Value": "plataforma"
+        }
+      ]
+    },
+    {
+      "GroupId": "sg-0geoespacial",
+      "GroupName": "urban-alert-geoespacial-tasks",
+      "VpcId": "vpc-0plataforma",
+      "Tags": [
+        {
+          "Key": "Stack",
+          "Value": "platform"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "LoadBalancers": [
+    {
+      "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-2:348364742283:loadbalancer/app/otro/1",
+      "LoadBalancerName": "otro-vpc",
+      "VpcId": "vpc-0otra"
+    }
+  ]
+}

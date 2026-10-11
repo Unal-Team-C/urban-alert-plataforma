@@ -1,0 +1,22 @@
+{
+  "NetworkInterfaces": [
+    {
+      "NetworkInterfaceId": "eni-0nat",
+      "InterfaceType": "nat_gateway",
+      "Description": "Interface for NAT Gateway nat-0abc",
+      "VpcId": "vpc-0plataforma"
+    },
+    {
+      "NetworkInterfaceId": "eni-0link",
+      "InterfaceType": "api_gateway_managed",
+      "Description": "VPC Link ENI",
+      "VpcId": "vpc-0plataforma"
+    },
+    {
+      "NetworkInterfaceId": "eni-0tarea",
+      "InterfaceType": "interface",
+      "Description": "arn:aws:ecs:us-east-2:348364742283:attachment/abc",
+      "VpcId": "vpc-0plataforma"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "format_version": "1.2",
+  "variables": {
+    "permitir_reemplazo_compartido": {
+      "value": false
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_vpc.this",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ]
+      }
+    },
+    {
+      "address": "aws_subnet.privada[1]",
+      "change": {
+        "actions": [
+          "create",
+          "delete"
+        ]
+      }
+    }
+  ]
+}

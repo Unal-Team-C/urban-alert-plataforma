@@ -1,0 +1,18 @@
+{
+  "format_version": "1.2",
+  "variables": {
+    "permitir_reemplazo_compartido": {
+      "value": false
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_ssm_parameter.contrato[\"vpc-id\"]",
+      "change": {
+        "actions": [
+          "delete"
+        ]
+      }
+    }
+  ]
+}
