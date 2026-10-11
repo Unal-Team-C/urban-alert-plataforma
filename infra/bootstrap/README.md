@@ -32,7 +32,7 @@ Qué permite y por qué:
 | Bloque | Para qué |
 |---|---|
 | `NetworkManage` | VPC, subredes, IGW, IP elástica, NAT Gateway, tablas de rutas, endpoint de S3, grupos de seguridad y ENI del VPC Link. La mayoría de las acciones de creación de EC2 no admiten restringir el recurso. |
-| `ApiGatewayManage` | HTTP API, stage, VPC Link y etiquetas (`apigateway:TagResource`/`UntagResource`: API Gateway las exige aparte de los verbos HTTP al crear stages y VPC Links con etiquetas). También lo usan los microservicios para registrar sus rutas e integraciones. |
+| `ApiGatewayManage` | HTTP API, stage, VPC Link y etiquetas, con `apigateway:*` limitado a `/apis*`, `/vpclinks*` y `/tags/*`. Al crear stages y VPC Links con etiquetas, API Gateway exige `apigateway:TagResource`, pero esa acción no figura en la referencia de IAM y el editor de políticas la rechaza. El comodín la cubre sin dar más alcance que los verbos `GET`/`POST`/`PUT`/`PATCH`/`DELETE` sobre esos mismos recursos. También lo usan los microservicios para registrar sus rutas e integraciones. |
 | `ApiGatewayServiceLinkedRole` | Rol vinculado `ops.apigateway.amazonaws.com`, que crea API Gateway la primera vez que se crea un VPC Link. |
 | `ApiGatewayLogGroups`, `ApiGatewayAccessLogDelivery` | Grupo de logs `/aws/apigateway/urban-alert-*` y entrega de los logs de acceso. |
 | `PlatformParameters`, `ParametersDescribe` | Parámetros SSM `/urban-alert/*`: la plataforma los escribe y los microservicios los leen. |
