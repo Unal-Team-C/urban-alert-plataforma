@@ -66,3 +66,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T006 hecha
 - network.tf: zonas = primeras numero_zonas de aws_availability_zones (ordenadas) con precondición; VPC 10.20.0.0/16 con DNS; privadas cidrsubnet(/4) y públicas cidrsubnet(/8, 240+i) sin IP pública; IGW; tabla pública + aws_route.publica_internet + asociaciones; aws_default_security_group sin reglas. Ajuste de pruebas: las aserciones de rutas/asociaciones privadas pasan de red.tftest.hcl a salida.tftest.hcl (run private_subnets_reach_the_internet_only_through_nat) para que cada archivo dependa solo de su área. Verificado: test -filter=tests/red.tftest.hcl → 4 passed.
+
+## 2026-10-11 · 001-red-api-gateway · T007 hecha
+- egress.tf: EIP + NAT (1, o uno por zona con nat_por_zona) en las públicas con depends_on IGW; una tabla privada por zona con 0.0.0.0/0 → NAT propio o el compartido; asociaciones; endpoint de gateway S3 en las tablas privadas. Verificado: test -filter=tests/salida.tftest.hcl → 4 passed; fmt -check limpio.

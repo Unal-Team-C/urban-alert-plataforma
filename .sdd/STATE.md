@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T007
+tarea_actual: T008
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T007: implementar infra/plataforma/egress.tf (aws_eip.nat, aws_nat_gateway.this con count 1 o numero_zonas, aws_route_table.privada, aws_route.privada_salida, aws_route_table_association.privada, aws_vpc_endpoint.s3); verificar test -filter=tests/salida.tftest.hcl.
+T008: implementar logs.tf (aws_cloudwatch_log_group.gateway) y gateway.tf (aws_apigatewayv2_api.this con CORS, aws_apigatewayv2_stage.default, aws_security_group.vpc_link, aws_vpc_security_group_egress_rule.vpc_link_https, aws_apigatewayv2_vpc_link.this); verificar test -filter=tests/gateway.tftest.hcl.
 
 ## Contexto de trabajo
 
