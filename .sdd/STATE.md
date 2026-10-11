@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T020
+tarea_actual: T025
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T020 bloqueada por pasos manuales del usuario; mientras, T024 (README) y T025 (CLAUDE.md), que no dependen de AWS.
+T025: actualizar CLAUDE.md (stacks, scripts, workflows, comandos de validación con Podman, gotchas: bash 3.2, mock ARN, push con gh).
 
 ## Contexto de trabajo
 
@@ -26,4 +26,5 @@ T020 bloqueada por pasos manuales del usuario; mientras, T024 (README) y T025 (C
 
 ## Bloqueos / preguntas abiertas
 
+- T020 (primer Provision real): el usuario debe (1) crear y adjuntar github-actions-urban-alert-platform (infra/bootstrap/github-platform-policy.json), (2) corregir la confianza OIDC con el subject inmutable, (3) crear secreto AWS_ROLE_ARN y variable AWS_REGION en urban-alert-plataforma, (4) autorizar el push a main. T021–T023 y T026 dependen de T020.
 - Confianza OIDC del rol pendiente de actualizar por el usuario (subject inmutable); sin ella el primer aprovisionamiento falla en la autenticación.

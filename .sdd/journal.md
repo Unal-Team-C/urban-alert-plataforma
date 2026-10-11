@@ -105,3 +105,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T019 hecha
 - .github/workflows/deprovision.yml: solo workflow_dispatch con confirm; primer paso corta (exit 1, nada eliminado) si confirm != urban-alert-plataforma o la rama no es main, antes de checkout y credenciales; misma concurrency; init + state list vacío → «nothing to delete» y salta el resto; check-dependents.sh con vpc_id/api_id de las salidas; destroy -auto-approve; resumen según resultado. Verificado: actionlint sin errores; sin on: push; confirmación (línea 37) antes de configure-aws-credentials (53).
+
+## 2026-10-11 · 001-red-api-gateway · T024 hecha
+- README.md: arquitectura (diagrama + tabla de piezas), contrato SSM (9 parámetros), workflows (guarda y cómo habilitar reemplazos; Deprovision con orden y confirmación), costes R-5 desglosados (~36,6 USD/mes; nat_por_zona ~73; nota del ALB de Express), arranque (enlace a infra/bootstrap), validación local con Podman, SDD. Verificado: secciones Arquitectura/Contrato/Workflows/Costes/Arranque/Validación presentes; 3 enlaces a docs/integracion.md.
