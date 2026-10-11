@@ -72,3 +72,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T008 hecha
 - logs.tf (grupo /aws/apigateway/urban-alert-gateway, retención var) y gateway.tf (HTTP API urban-alert-gateway con CORS y disable_execute_api_endpoint=false explícito; stage $default auto_deploy, throttling por variables, logs de acceso JSON; SG del VPC Link sin entrada + regla de salida tcp/443 al CIDR de la VPC; VPC Link v2 en las privadas). Hallazgo: con mock_provider el proveedor valida formato de ARN → mock_resource aws_cloudwatch_log_group con ARN realista en los 4 archivos de prueba. Verificado: gateway 5 passed; red 4 y salida 4 siguen pasando.
+
+## 2026-10-11 · 001-red-api-gateway · T009 hecha
+- ssm.tf: local contrato (9 claves) → aws_ssm_parameter.contrato for_each bajo /urban-alert/plataforma/, subredes-privadas StringList; outputs.tf: ssm_prefix, region, vpc_id, vpc_cidr, subredes_privadas, api_id, api_endpoint, api_execution_arn, vpc_link_id, vpc_link_sg_id. Verificado: terraform test completo 16 passed (red 4, salida 4, gateway 5, contrato 3); validate «Success».

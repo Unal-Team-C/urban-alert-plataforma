@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T009
+tarea_actual: T010
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T009: implementar ssm.tf (aws_ssm_parameter.contrato for_each de 9 claves, subredes-privadas StringList) y outputs.tf (ssm_prefix, vpc_id, subredes_privadas, api_endpoint, vpc_link_id y resto); verificar terraform test completo.
+T010: generar infra/plataforma/.terraform.lock.hcl con terraform providers lock -platform=linux_amd64 -platform=linux_arm64 -platform=darwin_arm64; verificar init -lockfile=readonly y hashes.
 
 ## Contexto de trabajo
 
