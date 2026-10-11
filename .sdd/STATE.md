@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T025
-estado_tarea: hecha
+tarea_actual: T020
+estado_tarea: bloqueada
 
 ## Siguiente paso
 
-T025: actualizar CLAUDE.md (stacks, scripts, workflows, comandos de validación con Podman, gotchas: bash 3.2, mock ARN, push con gh).
+T020 bloqueada: esperar a que el usuario complete los 4 pasos de infra/bootstrap/README.md (política, confianza OIDC, secreto/variable, autorizar push). Al desbloquear: push a main → seguir el run Provision (gh run watch) → T021 re-run → T022 Deprovision sin confirmación → T023 cuando geoespacial esté integrado.
 
 ## Contexto de trabajo
 

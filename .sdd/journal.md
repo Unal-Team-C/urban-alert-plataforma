@@ -108,3 +108,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T024 hecha
 - README.md: arquitectura (diagrama + tabla de piezas), contrato SSM (9 parámetros), workflows (guarda y cómo habilitar reemplazos; Deprovision con orden y confirmación), costes R-5 desglosados (~36,6 USD/mes; nat_por_zona ~73; nota del ALB de Express), arranque (enlace a infra/bootstrap), validación local con Podman, SDD. Verificado: secciones Arquitectura/Contrato/Workflows/Costes/Arranque/Validación presentes; 3 enlaces a docs/integracion.md.
+
+## 2026-10-11 · 001-red-api-gateway · T025 hecha
+- CLAUDE.md: estado remoto, arranque, estructura (stack, ejemplo, scripts, workflows, contrato SSM), comandos de validación con Podman (terraform 1.16.5, run.sh, actionlint 1.7.7, shellcheck v0.10.0) y gotchas (bash 3.2, ARN en mocks, lockfile multiplataforma, push con gh). Verificado: los comandos coinciden con la cabecera de tasks.md.

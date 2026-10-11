@@ -57,7 +57,7 @@ Las pruebas de Terraform se dividen en un archivo por área (`red`, `salida`, `g
 ## Fase 5: Pulido
 
 - [x] T024 [P] Actualizar el README: piezas y diagrama, tabla de parámetros SSM (contrato P9), workflows y cómo lanzar Deprovision (orden: consumidores primero), tabla de costes de research R-5 (incluida la nota del ALB de Express), arranque (enlace a `infra/bootstrap/`), validación local con Podman — archivos: README.md — cubre: RNF-004, HU-6, MS-005 — verifica: contiene las secciones citadas, la estimación mensual desglosada y el enlace a `docs/integracion.md`
-- [ ] T025 [P] Actualizar CLAUDE.md con el stack, los scripts, los workflows y los comandos de validación — archivos: CLAUDE.md — cubre: (pulido) — verifica: los comandos coinciden con los de la cabecera de este archivo
+- [x] T025 [P] Actualizar CLAUDE.md con el stack, los scripts, los workflows y los comandos de validación — archivos: CLAUDE.md — cubre: (pulido) — verifica: los comandos coinciden con los de la cabecera de este archivo
 - [ ] T026 (Opcional, con autorización expresa del usuario) Ciclo completo: con los consumidores desaprovisionados, ejecutar Deprovision confirmado → todo eliminado y el rol sigue funcionando → relanzar Deprovision → «nada que eliminar» → push a `main` recrea la plataforma (los IDs cambian y los consumidores los toman de SSM) — archivos: (ninguno) — cubre: HU-5 criterios 1, 4 y 5, HU-4 criterio 2 — verifica: runs en verde y la evidencia queda en el journal — depende: T023
 
 ## Correcciones de verificación
