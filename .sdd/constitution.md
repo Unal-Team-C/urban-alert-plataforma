@@ -1,6 +1,6 @@
 # Constitución del proyecto
 
-- **Versión**: 1.0.0
+- **Versión**: 1.0.1
 - **Última modificación**: 2026-10-11
 
 > Principios no negociables. Todo `plan.md` se verifica contra ellos (§3 del plan).
@@ -61,7 +61,7 @@ Requiere `podman machine start`. Desde la raíz del repo:
 
 - Terraform: `podman run --rm -v "$PWD":/w -w /w docker.io/hashicorp/terraform:1.16.5 -chdir=infra/<stack> init -backend=false`, luego `validate` y `test`; `... fmt -check -recursive infra`
 - Workflows: `podman run --rm -v "$PWD":/repo -w /repo docker.io/rhysd/actionlint:1.7.7`
-- Scripts: `podman run --rm -v "$PWD":/mnt -w /mnt docker.io/koalaman/shellcheck:stable scripts/*.sh`
+- Scripts: `podman run --rm -v "$PWD":/mnt -w /mnt docker.io/koalaman/shellcheck:v0.10.0 scripts/*.sh`
 
 ## Flujo de trabajo
 
@@ -72,3 +72,4 @@ Requiere `podman machine start`. Desde la raíz del repo:
 
 - 0.0.0 — plantilla inicial
 - 1.0.0 — 2026-10-11 — P1–P10 a partir de la práctica de `urban-alert-geoespacial` (spec 002) y de la spec 001-red-api-gateway
+- 1.0.1 — 2026-10-11 — shellcheck fijado a `v0.10.0` (antes `stable`) para cumplir P8

@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T018
+tarea_actual: T019
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T018: crear .github/workflows/provision.yml (push main, concurrency urban-alert-plataforma, job validate con fmt/validate/test de ambos stacks + run.sh + actionlint + shellcheck, job provision con OIDC, plan→show -json→guard→apply→smoke→resumen); verificar actionlint.
+T019: crear .github/workflows/deprovision.yml (workflow_dispatch con confirm; corte por confirmación/rama antes de credenciales; concurrency; estado vacío → nada que eliminar; check-dependents.sh → destroy; resumen); verificar actionlint.
 
 ## Contexto de trabajo
 

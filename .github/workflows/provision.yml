@@ -1,0 +1,127 @@
+# Provisioning of the shared platform (spec 001, RF-010): every push to main validates and applies.
+# Order (plan D-008): checks → plan → guard against replacing shared resources → apply → smoke test → summary.
+name: Provision
+
+on:
+  push:
+    branches: [main]
+
+# Shared with deprovision.yml: runs on the platform queue up instead of overlapping (constitution P10).
+concurrency:
+  group: urban-alert-plataforma
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_VERSION: 1.16.5
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  validate:
+    name: Static checks and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform format
+        run: terraform fmt -check -recursive infra
+
+      - name: Terraform validate and test (mocked providers)
+        run: |
+          for stack in plataforma ejemplo-consumidor; do
+            terraform -chdir="infra/$stack" init -backend=false -input=false -lockfile=readonly
+            terraform -chdir="infra/$stack" validate
+            terraform -chdir="infra/$stack" test
+          done
+
+      - name: Script tests (guard and dependents, with fixtures)
+        run: bash scripts/tests/run.sh
+
+      - name: Lint workflows
+        run: docker run --rm -v "$PWD:/repo" -w /repo docker.io/rhysd/actionlint:1.7.7 -color
+
+      - name: Lint scripts
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt docker.io/koalaman/shellcheck:v0.10.0 scripts/*.sh scripts/tests/*.sh
+
+  provision:
+    name: Provision the platform
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC: temporary AWS credentials, no stored keys (RF-014)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Plan
+        run: |
+          terraform -chdir=infra/plataforma init -input=false
+          terraform -chdir=infra/plataforma plan -input=false -no-color -out=tfplan | tee plan.txt
+          terraform -chdir=infra/plataforma show -json tfplan > plan.json
+
+      - name: Guard shared resources (RF-013)
+        run: scripts/guard-plan.sh plan.json
+
+      - name: Apply
+        run: terraform -chdir=infra/plataforma apply -input=false tfplan
+
+      - name: Read outputs
+        id: out
+        run: |
+          out() { terraform -chdir=infra/plataforma output -raw "$1"; }
+          {
+            echo "api_endpoint=$(out api_endpoint)"
+            echo "api_id=$(out api_id)"
+            echo "vpc_id=$(out vpc_id)"
+            echo "vpc_link_id=$(out vpc_link_id)"
+            echo "subredes=$(terraform -chdir=infra/plataforma output -json subredes_privadas | jq -r 'join(", ")')"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test (404 on unknown routes, no plain HTTP, SSM contract)
+        run: scripts/smoke-gateway.sh "${{ steps.out.outputs.api_endpoint }}"
+
+      - name: Summary
+        if: always()
+        env:
+          API_ENDPOINT: ${{ steps.out.outputs.api_endpoint }}
+          API_ID: ${{ steps.out.outputs.api_id }}
+          VPC_ID: ${{ steps.out.outputs.vpc_id }}
+          VPC_LINK_ID: ${{ steps.out.outputs.vpc_link_id }}
+          SUBREDES: ${{ steps.out.outputs.subredes }}
+        run: |
+          {
+            echo "## Plataforma UrbanAlert"
+            echo
+            echo "Plan: \`$(grep -E '^(Plan:|No changes)' plan.txt 2>/dev/null || echo 'no disponible')\`"
+            echo
+            echo "| Salida | Valor |"
+            echo "|---|---|"
+            echo "| URL del gateway | ${API_ENDPOINT:-–} |"
+            echo "| API | ${API_ID:-–} |"
+            echo "| VPC | ${VPC_ID:-–} |"
+            echo "| Subredes privadas | ${SUBREDES:-–} |"
+            echo "| VPC Link | ${VPC_LINK_ID:-–} |"
+            echo
+            echo "Contrato para los microservicios: parámetros SSM \`/urban-alert/plataforma/*\` (docs/integracion.md)."
+          } >> "$GITHUB_STEP_SUMMARY"
