@@ -90,3 +90,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T014 hecha
 - scripts/buscar-listener-express.sh <cluster> <servicio|ARN>: ecs describe-services → loadBalancers[0].targetGroupArn → elbv2 describe-target-groups → LoadBalancerArns[0] → describe-listeners Port 443; error explícito en cada paso vacío/None. Verificado: bash -n y shellcheck de todos los scripts sin avisos (SC2016 desactivado en la consulta JMESPath con backticks). Ejecución real pendiente de T023.
+
+## 2026-10-11 · 001-red-api-gateway · T015 hecha
+- infra/ejemplo-consumidor: versions.tf (proveedor + aviso de que nunca se aplica aquí), variables.tf (express_endpoint host sin esquema, express_listener_arn de listener ALB, rol_llamante, cabeceras_fijas sensible) y tests/ejemplo.tftest.hcl (6 runs: integraciones HTTP_PROXY/VPC_LINK al listener con payload 1.0; Host y SNI = endpoint; reescritura de reports y coordinates/$request.path.id; exactamente 3 rutas con su integración; POST interno AWS_IAM, públicas NONE, política execute-api:Invoke solo sobre $default/POST/api/v1/geoespacial/coordinates; cabecera fija; endpoint con https:// rechazado). Verificado: test falla solo por «Reference to undeclared resource».

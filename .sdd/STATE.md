@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T015
+tarea_actual: T016
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T015: escribir infra/ejemplo-consumidor/{versions,variables}.tf y tests/ejemplo.tftest.hcl (override_data SSM; integración VPC_LINK con listener, host/SNI = endpoint, payload 1.0, overwrite:path; rutas GET públicas y POST interno AWS_IAM; política execute-api:Invoke limitada); verificar test falla solo por recursos no declarados.
+T016: implementar infra/ejemplo-consumidor/main.tf (data aws_ssm_parameter api_id/vpc_link_id/api_execution_arn; local rutas reports/coordinate/assign; aws_apigatewayv2_integration.this y aws_apigatewayv2_route.this for_each) e iam.tf (aws_iam_role_policy.invocar_rutas_internas) + lockfile; verificar test, validate y fmt.
 
 ## Contexto de trabajo
 
