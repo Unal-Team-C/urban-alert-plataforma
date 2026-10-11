@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T003
+tarea_actual: T004
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T003: escribir infra/plataforma/tests/red.tftest.hcl y salida.tftest.hcl (mock_provider + override_data de zonas); verifica: test -filter=tests/red.tftest.hcl falla solo por recursos no declarados.
+T004: escribir tests/gateway.tftest.hcl y tests/contrato.tftest.hcl (HTTP API sin authorizer ni $default, stage throttling 50/100 + logs JSON 30 d, CORS sin credenciales, VPC Link + SG solo salida 443, 9 parámetros SSM).
 
 ## Contexto de trabajo
 

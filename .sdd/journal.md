@@ -51,3 +51,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T002 hecha
 - infra/plataforma: versions (TF >=1.10 <2, aws ~>6.0), backend (plataforma/terraform.tfstate, encrypt, use_lockfile), providers (default_tags Project/ManagedBy/Stack=plataforma), variables con validaciones (prefijo, CIDR <=/16, 2–4 zonas, tasa/ráfaga, retención CloudWatch >=30), terraform.tfvars. El lockfile generado por init se descarta hasta T010 (multiplataforma). Verificado: init -backend=false + validate «Success»; fmt -check limpio.
+
+## 2026-10-11 · 001-red-api-gateway · T003 hecha
+- tests/red.tftest.hcl (2 privadas /20 en zonas distintas de la VPC 10.20.0.0/16 con DNS; ninguna subred con IP pública automática; solo la tabla pública va al IGW y las privadas salen por NAT; asociaciones; SG por defecto sin reglas; numero_zonas=1 rechazado) y tests/salida.tftest.hcl (1 NAT compartido en publica[0] con su EIP; nat_por_zona → 2 NAT, cada tabla con el de su zona; endpoint S3 Gateway en las tablas privadas). Verificado: test -filter de cada archivo falla solo con «Reference to undeclared resource».
