@@ -37,7 +37,7 @@ run "private_subnets_in_two_zones" {
   }
 }
 
-run "only_public_subnets_route_to_the_internet_gateway" {
+run "public_subnets_route_to_the_internet_gateway" {
   command = apply
 
   assert {
@@ -46,13 +46,8 @@ run "only_public_subnets_route_to_the_internet_gateway" {
   }
 
   assert {
-    condition     = alltrue([for r in aws_route.privada_salida : r.gateway_id == null && r.nat_gateway_id != null])
-    error_message = "Private route tables must reach the internet only through a NAT gateway."
-  }
-
-  assert {
-    condition     = length(aws_route_table_association.privada) == 2 && length(aws_route_table_association.publica) == 2
-    error_message = "Every subnet must be associated with its route table."
+    condition     = length(aws_route_table_association.publica) == 2
+    error_message = "Every public subnet must be associated with the public route table."
   }
 }
 

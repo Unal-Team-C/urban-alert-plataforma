@@ -58,3 +58,17 @@ run "s3_gateway_endpoint_on_private_route_tables" {
     error_message = "The S3 endpoint must be associated with every private route table."
   }
 }
+
+run "private_subnets_reach_the_internet_only_through_nat" {
+  command = apply
+
+  assert {
+    condition     = alltrue([for r in aws_route.privada_salida : r.gateway_id == null && r.nat_gateway_id != null])
+    error_message = "Private route tables must reach the internet only through a NAT gateway."
+  }
+
+  assert {
+    condition     = alltrue([for i in range(2) : aws_route_table_association.privada[i].subnet_id == aws_subnet.privada[i].id && aws_route_table_association.privada[i].route_table_id == aws_route_table.privada[i].id])
+    error_message = "Each private subnet must use the private route table of its zone."
+  }
+}

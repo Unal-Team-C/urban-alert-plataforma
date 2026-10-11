@@ -63,3 +63,6 @@
 
 ## 2026-10-11 · 001-red-api-gateway · T005 hecha
 - scripts/tests/run.sh (función expect: código de salida + texto) y fixtures: 4 planes (sin cambios con reemplazo no protegido → 0; VPC+subred reemplazadas → 1; mismo con permiso → 0; borrado de parámetro SSM → 1) y 5 directorios deps-* (vacío con SG default/plataforma y ENI de NAT/VPC Link → 0; SG ajeno, ALB en la VPC, ruta+integración, ENI de tarea → 1). Verificado: run.sh falla los 11 casos solo porque no existen guard-plan.sh ni check-dependents.sh (exit 127).
+
+## 2026-10-11 · 001-red-api-gateway · T006 hecha
+- network.tf: zonas = primeras numero_zonas de aws_availability_zones (ordenadas) con precondición; VPC 10.20.0.0/16 con DNS; privadas cidrsubnet(/4) y públicas cidrsubnet(/8, 240+i) sin IP pública; IGW; tabla pública + aws_route.publica_internet + asociaciones; aws_default_security_group sin reglas. Ajuste de pruebas: las aserciones de rutas/asociaciones privadas pasan de red.tftest.hcl a salida.tftest.hcl (run private_subnets_reach_the_internet_only_through_nat) para que cada archivo dependa solo de su área. Verificado: test -filter=tests/red.tftest.hcl → 4 passed.

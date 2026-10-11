@@ -7,12 +7,12 @@
 
 feature_activa: 001-red-api-gateway
 fase: implement
-tarea_actual: T006
+tarea_actual: T007
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T006: implementar infra/plataforma/network.tf (data aws_availability_zones.available, aws_vpc.this, aws_subnet.privada/publica, aws_internet_gateway.this, aws_route_table.publica + aws_route.publica_internet + asociaciones, aws_default_security_group.this). Ojo: red.tftest.hcl también usa aws_route.privada_salida y aws_route_table_association.privada (de egress.tf, T007): esos runs pasarán al terminar T007.
+T007: implementar infra/plataforma/egress.tf (aws_eip.nat, aws_nat_gateway.this con count 1 o numero_zonas, aws_route_table.privada, aws_route.privada_salida, aws_route_table_association.privada, aws_vpc_endpoint.s3); verificar test -filter=tests/salida.tftest.hcl.
 
 ## Contexto de trabajo
 
