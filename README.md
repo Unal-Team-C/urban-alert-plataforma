@@ -71,7 +71,7 @@ flowchart TB
 | Túnel de Cloudflare para publicar la demo | No hace falta: el gateway ya es público |
 | Frontend servido por el gateway en `/` | Fuera de esta plataforma: el frontend tendrá su propia URL y llamará al gateway (CORS) |
 
-Estado: la plataforma está aprovisionada desde la spec 001. Los microservicios se integran uno a uno; el primero es [urban-alert-geoespacial](https://github.com/Unal-Team-C/urban-alert-geoespacial). La mensajería entre servicios (en local, RabbitMQ entre Reportes y Auditoria) y la autenticación en el gateway quedan para features posteriores.
+Estado: la plataforma se define y aprovisiona con la spec 001. Los microservicios se integran uno a uno; el primero es [urban-alert-geoespacial](https://github.com/Unal-Team-C/urban-alert-geoespacial). La mensajería entre servicios (en local, RabbitMQ entre Reportes y Auditoria) y la autenticación en el gateway quedan para features posteriores.
 
 ### Detalle de la plataforma
 
