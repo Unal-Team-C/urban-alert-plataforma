@@ -1,7 +1,8 @@
 # Egress of the private subnets through managed NAT gateways (spec RF-003; plan D-003).
 # The microservices call each other through the public gateway URL, so the private subnets need internet egress.
 locals {
-  numero_nat = var.nat_por_zona ? var.numero_zonas : 1
+  # Paused: no NAT, no elastic IP and no default route (the private subnets keep only the S3 endpoint).
+  numero_nat = var.pausada ? 0 : (var.nat_por_zona ? var.numero_zonas : 1)
 }
 
 resource "aws_eip" "nat" {
@@ -39,7 +40,7 @@ resource "aws_route_table" "privada" {
 }
 
 resource "aws_route" "privada_salida" {
-  count = var.numero_zonas
+  count = var.pausada ? 0 : var.numero_zonas
 
   route_table_id         = aws_route_table.privada[count.index].id
   destination_cidr_block = "0.0.0.0/0"

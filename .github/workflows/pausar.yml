@@ -1,0 +1,128 @@
+# Pause of the whole UrbanAlert environment to stop billing, without deprovisioning: no data is deleted.
+# 1. Each service runs its own Pausar workflow (its Terraform, its state): the ECS services remove their
+#    stateless compute (routes and Express service) and stop RDS; Auditoria stops RDS; Multimedia stops DocumentDB.
+# 2. Only when every service is paused, the platform removes its NAT Gateway and publishes pausada = true, which
+#    makes every Provision refuse to deploy until Reanudar.
+# Kept: VPC, API Gateway, SSM contract, databases (stopped), S3 buckets, ECR images, secrets, Lambda functions, queues.
+# Needs the repository secret URBAN_ALERT_ACTIONS_TOKEN (Actions read and write on the service repositories).
+name: Pausar
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Escribe pausar para detener todos los servicios (los datos se conservan)"
+        required: true
+        type: string
+
+# Same group as Provision and Deprovision of the platform: they never overlap.
+concurrency:
+  group: urban-alert-plataforma
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_VERSION: 1.16.5
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  confirmar:
+    name: Check confirmation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check confirmation
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          REF: ${{ github.ref }}
+          TOKEN: ${{ secrets.URBAN_ALERT_ACTIONS_TOKEN }}
+        run: |
+          if [ "$CONFIRM" != "pausar" ]; then
+            echo "::error::Confirmation missing: type pausar. Nothing was changed."
+            exit 1
+          fi
+          if [ "$REF" != "refs/heads/main" ]; then
+            echo "::error::Run this workflow on main (the AWS role only trusts main). Nothing was changed."
+            exit 1
+          fi
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Secret URBAN_ALERT_ACTIONS_TOKEN missing (README, Pausa y reanudación). Nothing was changed."
+            exit 1
+          fi
+
+  servicios:
+    name: Pause ${{ matrix.repo }}
+    needs: confirmar
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo:
+          - urban-alert-reportes
+          - urban-alert-usuarios
+          - urban-alert-geoespacial
+          - urban-alert-auditoria
+          - Urban-Alert-multimedia
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Pausar in ${{ matrix.repo }} and wait
+        env:
+          GH_TOKEN: ${{ secrets.URBAN_ALERT_ACTIONS_TOKEN }}
+          REPO: ${{ matrix.repo }}
+        # The confirmation of each service repo is its own name in lower case.
+        run: scripts/disparar-y-esperar.sh "$REPO" pausar.yml "confirm=${REPO,,}"
+
+  plataforma:
+    name: Pause the platform (NAT Gateway)
+    # Only after every service is paused: a failed service keeps the NAT, so it can still be resumed or fixed.
+    needs: servicios
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Plan (pausada = true)
+        run: |
+          terraform -chdir=infra/plataforma init -input=false
+          terraform -chdir=infra/plataforma plan -input=false -no-color -out=tfplan -var pausada=true | tee plan.txt
+          terraform -chdir=infra/plataforma show -json tfplan > plan.json
+
+      - name: Guard shared resources (RF-013)
+        run: scripts/guard-plan.sh plan.json
+
+      - name: Apply
+        run: terraform -chdir=infra/plataforma apply -input=false tfplan
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## UrbanAlert en pausa"
+            echo
+            echo "Plan de la plataforma: \`$(grep -E '^(Plan:|No changes)' plan.txt 2>/dev/null || echo 'no disponible')\`"
+            echo
+            echo "- Servicios ECS: rutas y servicio Express retirados; RDS detenida."
+            echo "- Auditoría: RDS detenida. Multimedia: DocumentDB detenido."
+            echo "- Plataforma: sin NAT Gateway; \`/urban-alert/plataforma/pausada = true\`."
+            echo "- Se conservan los datos, la VPC, el gateway, las imágenes de ECR y los buckets."
+            echo "- AWS reinicia una base detenida a los 7 días: el workflow diario Mantener pausa la vuelve a detener."
+            echo "- Para volver: workflow **Reanudar**."
+          } >> "$GITHUB_STEP_SUMMARY"
