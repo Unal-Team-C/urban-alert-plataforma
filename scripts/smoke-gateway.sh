@@ -35,12 +35,24 @@ else
   echo "ok   plain HTTP not served (code ${code:-none})"
 fi
 
-# 3. The nine SSM parameters of the contract exist (plan §7).
-count="$(aws ssm get-parameters-by-path --path /urban-alert/plataforma/ --query 'length(Parameters)' --output text)"
-if [[ "$count" == "9" ]]; then
-  echo "ok   9 SSM parameters under /urban-alert/plataforma/"
+# 3. The nine SSM parameters of the contract exist by name (plan §7), plus the pause state (true or false).
+prefix=/urban-alert/plataforma/
+names="$(aws ssm get-parameters-by-path --path "$prefix" --query 'Parameters[].Name' --output text | tr '\t' '\n')"
+missing=""
+for name in region vpc-id vpc-cidr subredes-privadas api-id api-endpoint api-execution-arn vpc-link-id vpc-link-sg-id; do
+  grep -qx "$prefix$name" <<<"$names" || missing="$missing $name"
+done
+if [[ -z "$missing" ]]; then
+  echo "ok   the 9 contract parameters exist under $prefix"
 else
-  echo "FAIL found $count SSM parameters under /urban-alert/plataforma/, expected 9"
+  echo "FAIL contract parameters missing under $prefix:$missing"
+  failures=$((failures + 1))
+fi
+pausada="$(aws ssm get-parameter --name "${prefix}pausada" --query Parameter.Value --output text 2>/dev/null || true)"
+if [[ "$pausada" == "true" || "$pausada" == "false" ]]; then
+  echo "ok   pause state ${prefix}pausada = $pausada"
+else
+  echo "FAIL ${prefix}pausada is '${pausada:-missing}', expected true or false"
   failures=$((failures + 1))
 fi
 
