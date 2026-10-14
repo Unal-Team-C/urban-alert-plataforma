@@ -43,6 +43,12 @@ variable "nat_por_zona" {
   default     = false
 }
 
+variable "pausada" {
+  description = "Only the Pausar workflow sets it to true (Provision keeps the current value from SSM): removes the NAT Gateway, its elastic IP and the private default routes, so the paused platform stops billing for egress. The VPC, gateway and contract stay."
+  type        = bool
+  default     = false
+}
+
 variable "cors_origenes" {
   description = "Origins allowed by the gateway CORS configuration."
   type        = list(string)

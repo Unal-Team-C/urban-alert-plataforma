@@ -1,0 +1,59 @@
+# Keeps a paused environment paused: AWS restarts a stopped RDS instance or DocumentDB cluster after 7 days.
+# Every day, while /urban-alert/plataforma/pausada = true, stops any urban-alert-* database that is running again.
+# Does nothing while the platform is running. Uses only the AWS role (no GitHub token).
+name: Mantener pausa
+
+on:
+  schedule:
+    - cron: "0 11 * * *" # 06:00 in Bogotá
+  workflow_dispatch:
+
+concurrency:
+  group: urban-alert-plataforma
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  detener:
+    name: Re-stop restarted databases
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Read the pause state
+        id: pausa
+        run: echo "pausada=$(scripts/estado-pausa.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Stop the databases that AWS restarted
+        if: steps.pausa.outputs.pausada == 'true'
+        run: scripts/detener-bases.sh | tee detenidas.txt
+
+      - name: Summary
+        if: always()
+        env:
+          PAUSADA: ${{ steps.pausa.outputs.pausada }}
+        run: |
+          {
+            echo "## Mantener pausa"
+            if [ "$PAUSADA" = "true" ]; then
+              echo '```'
+              cat detenidas.txt 2>/dev/null || echo "sin datos"
+              echo '```'
+            else
+              echo "La plataforma no está en pausa: no se tocó nada."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

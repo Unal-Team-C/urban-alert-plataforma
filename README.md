@@ -124,10 +124,14 @@ Cómo desplegar un microservicio y registrar sus rutas (incluido el enrutamiento
 |---|---|---|
 | [Provision](.github/workflows/provision.yml) | Cada push a `main` | Comprobaciones (`fmt`, `validate`, `terraform test`, pruebas de scripts, actionlint, shellcheck) → `plan` → [guarda](scripts/guard-plan.sh) → `apply` → [prueba de humo](scripts/smoke-gateway.sh) → resumen con las salidas |
 | [Deprovision](.github/workflows/deprovision.yml) | Solo a mano | Exige confirmación → [comprueba dependientes](scripts/check-dependents.sh) → `destroy` |
+| [Pausar](.github/workflows/pausar.yml) | Solo a mano | Exige confirmación → el Pausar de cada servicio → quita el NAT (`pausada = true`). Ver [Pausa y reanudación](#pausa-y-reanudación) |
+| [Reanudar](.github/workflows/reanudar.yml) | Solo a mano | Recrea el NAT (`pausada = false`) → el Provision de cada servicio, Reportes al final |
+| [Mantener pausa](.github/workflows/mantener-pausa.yml) | Cada día, 06:00 de Bogotá | Si está en pausa, vuelve a [detener las bases](scripts/detener-bases.sh) que AWS reinició |
 
-Los dos comparten el grupo de `concurrency` `urban-alert-plataforma`: nunca se ejecutan a la vez.
+Todos comparten el grupo de `concurrency` `urban-alert-plataforma`: nunca se ejecutan a la vez.
 
 - **Guarda contra reemplazos**: si un cambio elimina o reemplaza la VPC, las subredes privadas, el gateway, su stage, el VPC Link o los parámetros SSM, Provision falla antes de aplicar. Si es intencionado, pon `permitir_reemplazo_compartido = true` en [`terraform.tfvars`](infra/plataforma/terraform.tfvars) en un commit, y vuelve a ponerlo en `false` después. Los consumidores tendrán que volver a desplegarse.
+- **Durante una pausa** no se puede desaprovisionar: Deprovision modifica la base (quita la protección) y una base detenida no acepta cambios. Primero Reanudar.
 - **Desaprovisionar**: primero cada microservicio (su propio Deprovision) y **después** la plataforma. En GitHub: Actions → Deprovision → Run workflow → escribir `urban-alert-plataforma`. Si queda algo en uso (grupos de seguridad, ALB o interfaces de red en la VPC, rutas o integraciones en el gateway), no elimina nada y lo lista. Un push a `main` recrea la plataforma; los IDs cambian y los consumidores los toman de SSM.
 
 ## Costes
@@ -147,7 +151,40 @@ Estimación mensual en `us-east-2` con la plataforma encendida y sin tráfico (7
 
 - Con `nat_por_zona = true` el NAT y su IP se duplican: unos 73 USD al mes.
 - No incluye el **ALB interno que crea ECS Express**: unos 16–20 USD al mes, compartido por hasta 25 servicios. Lo crea el primer microservicio que se despliega y lo elimina Express cuando no queda ninguno.
-- Para no pagar cuando no se usa: desaprovisionar (primero los microservicios).
+- Para no pagar cuando no se usa sin perder nada: [Pausar](#pausa-y-reanudación). Para eliminarlo todo: desaprovisionar (primero los microservicios).
+
+## Pausa y reanudación
+
+**Pausar** detiene todo lo que cobra sin tráfico y no borra ningún dato. **Reanudar** lo vuelve a dejar como estaba, con el mismo commit de cada servicio.
+
+| Repo | Al pausar (su propio [Pausar](https://github.com/Unal-Team-C/urban-alert-usuarios/blob/main/.github/workflows/pausar.yml), con su Terraform) | Al reanudar (su Provision) |
+|---|---|---|
+| Usuarios, Reportes, Geoespacial | Retira las rutas del gateway y el servicio Express (tareas y ALB, sin estado); detiene la RDS (`aws_rds_instance_state`, `pausada = true`) | Arranca la RDS y recrea servicio y rutas |
+| Auditoría | Detiene la RDS; funciones, cola, regla y rutas se quedan (no cobran sin tráfico) | Arranca la RDS |
+| Multimedia | Detiene DocumentDB ([`docdb-estado.sh`](https://github.com/Unal-Team-C/Urban-Alert-multimedia/blob/main/scripts/docdb-estado.sh): no hay recurso de Terraform para eso); funciones, rutas y bucket se quedan | Arranca DocumentDB |
+| Plataforma | Quita el NAT Gateway, su IP y las rutas por defecto de las subredes privadas; publica `/urban-alert/plataforma/pausada = true` | Recrea el NAT; `pausada = false` |
+| Web | Nada: CloudFront y S3 no cobran sin tráfico | — |
+
+Se conservan las bases (detenidas) con sus datos, los buckets, las imágenes de ECR, los secretos, la VPC, el gateway y el contrato SSM. Coste aproximado en pausa: almacenamiento de las bases, S3, ECR y secretos, unos 15 USD al mes, frente a unos 220 encendido.
+
+**Uso** (Actions del repo `urban-alert-plataforma`, siempre en `main`):
+
+1. **Pausar** → Run workflow → escribir `pausar`. Pausa los 5 servicios en paralelo y, solo si todos terminan bien, la plataforma. Si un servicio falla, el NAT se queda y el resto puede reanudarse.
+2. **Reanudar** → Run workflow. Primero la plataforma; luego Usuarios, Geoespacial, Multimedia y Auditoría en paralelo; Reportes al final, porque llama a Geoespacial y Multimedia. Tarda lo que un Provision de cada servicio (unos 15–20 min).
+
+**Reglas mientras está en pausa:**
+
+- Cada Provision lee `/urban-alert/plataforma/pausada` y **no despliega** si es `true`: un push a `main` de un servicio falla sin cambiar nada. El Provision de la plataforma conserva el estado de pausa (no recrea el NAT).
+- AWS **reinicia una base detenida a los 7 días**. [Mantener pausa](.github/workflows/mantener-pausa.yml) la vuelve a detener cada día. GitHub desactiva los workflows programados tras 60 días sin actividad en el repo: si la pausa es larga, revisa que siga activo.
+- Para desaprovisionar, primero Reanudar (ver arriba).
+
+**Requisito (una sola vez):** el secreto `URBAN_ALERT_ACTIONS_TOKEN` en este repo. El `GITHUB_TOKEN` de un run solo alcanza su propio repo, así que Pausar y Reanudar necesitan un token para lanzar los workflows de los demás. Un *fine-grained personal access token* (o una GitHub App) con:
+
+- Propietario: `Unal-Team-C`.
+- Repositorios: `urban-alert-usuarios`, `urban-alert-reportes`, `urban-alert-geoespacial`, `urban-alert-auditoria`, `Urban-Alert-multimedia`.
+- Permisos: **Actions: Read and write** (nada más).
+
+Si la organización exige aprobar los tokens, un administrador debe aprobarlo. Los permisos de AWS ya están: el rol compartido tiene `rds:*` (incluye DocumentDB) y la política de la plataforma permite crear y borrar el NAT.
 
 ## Arranque (una sola vez)
 

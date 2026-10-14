@@ -16,6 +16,15 @@ locals {
   }
 }
 
+# Pause state, outside the contract map: the Provision workflows of every repo read it and refuse to deploy while
+# the platform is paused, and the daily Mantener pausa workflow re-stops the databases that AWS restarts.
+resource "aws_ssm_parameter" "pausada" {
+  name        = "${local.ssm_prefix}pausada"
+  description = "UrbanAlert pause state: true while the Pausar workflow has the platform and services stopped"
+  type        = "String"
+  value       = tostring(var.pausada)
+}
+
 resource "aws_ssm_parameter" "contrato" {
   for_each = local.contrato
 

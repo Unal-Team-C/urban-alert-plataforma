@@ -121,3 +121,12 @@
 - README: nueva sección «UrbanAlert en AWS» (diagrama Mermaid validado con mermaid 11.4.1 + tabla local→AWS).
 - Corrección de la corrección: el editor de IAM rechaza apigateway:TagResource/UntagResource («Action doesn't exist»); la referencia oficial (servicereference …/apigateway.json) no las lista, aunque el runtime las exige (AccessDenied del run 38107569124). Se sustituye la lista de verbos por `apigateway:*` sobre los mismos recursos (/apis*, /vpclinks*, /tags/*): mismo alcance efectivo y pasa la validación.
 - El usuario publica la nueva versión de la política (apigateway:* acotado). Reintento de Provision con push a main.
+
+## 2026-10-11 · 001-red-api-gateway · T020 hecha
+- Run 38108135595 (3878f64) en verde en 3 min 53 s: plan 11 to add (stage, VPC Link, 2 rutas privadas, 7… + SSM), guarda OK, Apply complete 11 added; humo: ruta no registrada 404, HTTP plano no atendido (000), 9 parámetros SSM. Gateway: https://aotsp8k5ad.execute-api.us-east-2.amazonaws.com. Comprobado a mano: curl /api/v1/x → 404 {"message":"Not Found"}; http:// → 000. Entre los dos runs (3 min 13 s + 3 min 53 s) la plataforma quedó completa desde cero en < 20 min (MS-001, RNF-003).
+
+## 2026-10-11 · 001-red-api-gateway · T021 hecha
+- Re-run del run 38108135595 (intento 2, mismo commit 3878f64) en verde en 1 min 37 s: «No changes. Your infrastructure matches the configuration.», Apply 0/0/0, humo OK (MS-002, RNF-002, RNF-003 < 10 min).
+
+## 2026-10-11 · 001-red-api-gateway · T022 hecha
+- Run 38108491163 (Deprovision, confirm=no-confirmo): falla en «Check confirmation» con «Confirmation missing: type urban-alert-plataforma. Nothing was deleted.»; checkout, credenciales, state, dependientes y destroy en skipped; resumen ejecutado. El gateway sigue respondiendo 404 en rutas no registradas (HU-5 criterio 2, RF-012).

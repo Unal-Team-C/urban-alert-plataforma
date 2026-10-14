@@ -74,10 +74,20 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      # A push while paused must not bring the NAT back: only the Reanudar workflow changes the pause state.
+      - name: Read the pause state
+        id: pausa
+        run: |
+          pausada="$(scripts/estado-pausa.sh)"
+          echo "pausada=$pausada" >> "$GITHUB_OUTPUT"
+          echo "Pause state kept by this run: pausada=$pausada"
+
       - name: Plan
+        env:
+          PAUSADA: ${{ steps.pausa.outputs.pausada }}
         run: |
           terraform -chdir=infra/plataforma init -input=false
-          terraform -chdir=infra/plataforma plan -input=false -no-color -out=tfplan | tee plan.txt
+          terraform -chdir=infra/plataforma plan -input=false -no-color -out=tfplan -var "pausada=$PAUSADA" | tee plan.txt
           terraform -chdir=infra/plataforma show -json tfplan > plan.json
 
       - name: Guard shared resources (RF-013)

@@ -52,6 +52,38 @@ run "one_nat_gateway_per_zone" {
   }
 }
 
+run "paused_platform_has_no_nat_but_keeps_the_network" {
+  command = apply
+
+  variables {
+    pausada = true
+  }
+
+  assert {
+    condition     = length(aws_nat_gateway.this) == 0 && length(aws_eip.nat) == 0 && length(aws_route.privada_salida) == 0
+    error_message = "pausada = true must remove the NAT gateway, its elastic IP and the private default routes."
+  }
+
+  assert {
+    condition     = length(aws_subnet.privada) == 2 && length(aws_route_table.privada) == 2 && toset(aws_vpc_endpoint.s3.route_table_ids) == toset(aws_route_table.privada[*].id)
+    error_message = "A paused platform keeps its subnets, private route tables and the S3 endpoint."
+  }
+
+  assert {
+    condition     = aws_ssm_parameter.pausada.value == "true" && aws_ssm_parameter.pausada.name == "/urban-alert/plataforma/pausada"
+    error_message = "The pause state must be published as /urban-alert/plataforma/pausada = true."
+  }
+}
+
+run "running_platform_publishes_pausada_false" {
+  command = apply
+
+  assert {
+    condition     = aws_ssm_parameter.pausada.value == "false"
+    error_message = "By default the platform is running: /urban-alert/plataforma/pausada = false."
+  }
+}
+
 run "s3_gateway_endpoint_on_private_route_tables" {
   command = apply
 

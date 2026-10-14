@@ -1,0 +1,118 @@
+# Resume of the UrbanAlert environment paused by the Pausar workflow.
+# 1. The platform brings its NAT Gateway back and publishes pausada = false.
+# 2. Each service runs its own Provision on main, which starts its database (Terraform: aws_rds_instance_state, or
+#    the DocumentDB start step) and recreates what Pausar removed. Reportes goes last: it calls Geoespacial and
+#    Multimedia through the gateway. Same commit as before the pause: images and packages are reused.
+# Needs the repository secret URBAN_ALERT_ACTIONS_TOKEN (Actions read and write on the service repositories).
+name: Reanudar
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: urban-alert-plataforma
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_VERSION: 1.16.5
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  plataforma:
+    name: Resume the platform (NAT Gateway)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check branch and token
+        env:
+          REF: ${{ github.ref }}
+          TOKEN: ${{ secrets.URBAN_ALERT_ACTIONS_TOKEN }}
+        run: |
+          if [ "$REF" != "refs/heads/main" ]; then
+            echo "::error::Run this workflow on main (the AWS role only trusts main). Nothing was changed."
+            exit 1
+          fi
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Secret URBAN_ALERT_ACTIONS_TOKEN missing (README, Pausa y reanudación). Nothing was changed."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Plan (pausada = false)
+        run: |
+          terraform -chdir=infra/plataforma init -input=false
+          terraform -chdir=infra/plataforma plan -input=false -no-color -out=tfplan -var pausada=false | tee plan.txt
+          terraform -chdir=infra/plataforma show -json tfplan > plan.json
+
+      - name: Guard shared resources (RF-013)
+        run: scripts/guard-plan.sh plan.json
+
+      - name: Apply
+        run: terraform -chdir=infra/plataforma apply -input=false tfplan
+
+      - name: Smoke test (404 on unknown routes, no plain HTTP, SSM contract)
+        run: scripts/smoke-gateway.sh "$(terraform -chdir=infra/plataforma output -raw api_endpoint)"
+
+  servicios:
+    name: Provision ${{ matrix.repo }}
+    needs: plataforma
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo:
+          - urban-alert-usuarios
+          - urban-alert-geoespacial
+          - Urban-Alert-multimedia
+          - urban-alert-auditoria
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Provision in ${{ matrix.repo }} and wait
+        env:
+          GH_TOKEN: ${{ secrets.URBAN_ALERT_ACTIONS_TOKEN }}
+          REPO: ${{ matrix.repo }}
+        run: scripts/disparar-y-esperar.sh "$REPO" provision.yml
+
+  reportes:
+    name: Provision urban-alert-reportes
+    # Its smoke test and its writes go through the routes of Geoespacial and Multimedia.
+    needs: servicios
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Provision in urban-alert-reportes and wait
+        env:
+          GH_TOKEN: ${{ secrets.URBAN_ALERT_ACTIONS_TOKEN }}
+        run: scripts/disparar-y-esperar.sh urban-alert-reportes provision.yml
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## UrbanAlert reanudado"
+            echo
+            echo "- Plataforma con NAT Gateway; \`/urban-alert/plataforma/pausada = false\`."
+            echo "- Cada servicio pasó su Provision completo (bases arrancadas, servicio, rutas y prueba de humo)."
+          } >> "$GITHUB_STEP_SUMMARY"
