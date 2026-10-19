@@ -159,11 +159,13 @@ Estimación mensual en `us-east-2` con la plataforma encendida y sin tráfico (7
 
 | Repo | Al pausar (su propio [Pausar](https://github.com/Unal-Team-C/urban-alert-usuarios/blob/main/.github/workflows/pausar.yml), con su Terraform) | Al reanudar (su Provision) |
 |---|---|---|
-| Usuarios, Reportes, Geoespacial | Retira las rutas del gateway y el servicio Express (tareas y ALB, sin estado); detiene la RDS (`aws_rds_instance_state`, `pausada = true`) | Arranca la RDS y recrea servicio y rutas |
-| Auditoría | Detiene la RDS; funciones, cola, regla y rutas se quedan (no cobran sin tráfico) | Arranca la RDS |
+| Usuarios, Reportes, Geoespacial | Retira las rutas del gateway y el servicio Express (tareas y ALB, sin estado); detiene la RDS (`scripts/rds-estado.sh`) | Arranca la RDS y recrea servicio y rutas |
+| Auditoría | Detiene la RDS (`scripts/rds-estado.sh`); funciones, cola, regla y rutas se quedan (no cobran sin tráfico) | Arranca la RDS |
 | Multimedia | Detiene DocumentDB ([`docdb-estado.sh`](https://github.com/Unal-Team-C/Urban-Alert-multimedia/blob/main/scripts/docdb-estado.sh): no hay recurso de Terraform para eso); funciones, rutas y bucket se quedan | Arranca DocumentDB |
 | Plataforma | Quita el NAT Gateway, su IP y las rutas por defecto de las subredes privadas; publica `/urban-alert/plataforma/pausada = true` | Recrea el NAT; `pausada = false` |
 | Web | Nada: CloudFront y S3 no cobran sin tráfico | — |
+
+Las bases se detienen y arrancan con la AWS CLI, no con Terraform: `aws_rds_instance_state` (proveedor 6.68) no puede arrancar una instancia detenida, y para DocumentDB no hay recurso. Detenerlas no cambia nada de lo que gestiona Terraform.
 
 Se conservan las bases (detenidas) con sus datos, los buckets, las imágenes de ECR, los secretos, la VPC, el gateway y el contrato SSM. Coste aproximado en pausa: almacenamiento de las bases, S3, ECR y secretos, unos 15 USD al mes, frente a unos 220 encendido.
 
