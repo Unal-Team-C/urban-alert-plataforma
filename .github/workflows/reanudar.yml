@@ -1,7 +1,7 @@
 # Resume of the UrbanAlert environment paused by the Pausar workflow.
 # 1. The platform brings its NAT Gateway back and publishes pausada = false.
-# 2. Each service runs its own Provision on main, which starts its database (Terraform: aws_rds_instance_state, or
-#    the DocumentDB start step) and recreates what Pausar removed. Reportes goes last: it calls Geoespacial and
+# 2. Each service runs its own Provision on main, which starts its database (scripts/rds-estado.sh or
+#    scripts/docdb-estado.sh) and recreates what Pausar removed. Reportes goes last: it calls Geoespacial and
 #    Multimedia through the gateway. Same commit as before the pause: images and packages are reused.
 # Needs the repository secret URBAN_ALERT_ACTIONS_TOKEN (Actions read and write on the service repositories).
 name: Reanudar
